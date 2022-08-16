@@ -119,6 +119,7 @@ class Chrome:
                 if element_text.get_attribute('textContent') == check_data.check_text_content:
                     self.logger.debug(element_text.get_attribute('textContent'))
                     self.logger.debug(element_check.tag_name)
+                    element_check.click()
                 else:
                     self.logger.debug(element_check.get_attribute('innerHTML'))
                     self.logger.debug(element_check.tag_name)
