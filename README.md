@@ -6,6 +6,8 @@
 
 - python3.8
 - pip 22.2.2
+- chromedriver
+  - https://chromedriver.chromium.org/downloads
 
 ```shell
 git clone https://github.com/smyoo-testworks/hiworks-check-in-and-out.git

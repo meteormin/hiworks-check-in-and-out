@@ -18,29 +18,29 @@ def cli():
 
 
 @cli.command()
-@click.option('--id', required=False, type=click.types.STRING, help='hiworks id')
+@click.option('--login_id', required=False, type=click.types.STRING, help='hiworks id')
 @click.option('--passwd', required=False, type=click.types.STRING, help='hiworks password')
-def checkin(_id: str, passwd: str):
-    if _id is None or passwd is None:
+def checkin(login_id: str = None, passwd: str = None):
+    if login_id is None or passwd is None:
         conf = config()
-        _id = conf['default']['id']
+        login_id = conf['default']['id']
         passwd = conf['default']['password']
 
     browser = Chrome(Log.logger('checkin'))
-    browser.checkin(_id, passwd)
+    browser.checkin(login_id, passwd)
 
 
 @cli.command()
-@click.option('--id', required=False, type=click.types.STRING, help='hiworks id')
+@click.option('--login_id', required=False, type=click.types.STRING, help='hiworks id')
 @click.option('--passwd', required=False, type=click.types.STRING, help='hiworks password')
-def checkout(_id: str, passwd: str):
-    if _id is None or passwd is None:
+def checkout(login_id: str = None, passwd: str = None):
+    if login_id is None or passwd is None:
         conf = config()
-        _id = conf['default']['id']
+        login_id = conf['default']['id']
         passwd = conf['default']['password']
 
     browser = Chrome(Log.logger('checkout'))
-    browser.checkout(_id, passwd)
+    browser.checkout(login_id, passwd)
 
 
 if __name__ == '__main__':
