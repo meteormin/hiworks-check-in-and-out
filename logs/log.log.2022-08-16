@@ -1,0 +1,9 @@
+2022-08-16 09:40:29,341 - auto-checker - DEBUG - [checkin] info: page is ready
+2022-08-16 09:40:29,848 - auto-checker - INFO - [checkin] process: login...
+2022-08-16 09:40:29,848 - auto-checker - INFO - [checkin] ready for start parse
+2022-08-16 09:40:29,848 - auto-checker - INFO - [checkin] success: login
+2022-08-16 09:40:30,159 - auto-checker - DEBUG - [checkin] info: page is ready
+2022-08-16 09:40:30,510 - auto-checker - DEBUG - [checkin] open div button
+2022-08-16 09:40:30,516 - auto-checker - DEBUG - [checkin] info: page is ready
+2022-08-16 09:40:30,841 - auto-checker - DEBUG - [checkin] 출근하기
+2022-08-16 09:40:30,842 - auto-checker - DEBUG - [checkin] button

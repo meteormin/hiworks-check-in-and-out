@@ -120,6 +120,12 @@ class Chrome:
                     self.logger.debug(element_text.get_attribute('textContent'))
                     self.logger.debug(element_check.tag_name)
                     element_check.click()
+                    if index == 1:
+                        alert = driver.switch_to.alert
+                        self.logger.debug(f"alert: {alert.text}")
+                        sleep(0.3)
+                        alert.accept()
+                        sleep(1)
                 else:
                     self.logger.debug(element_check.get_attribute('innerHTML'))
                     self.logger.debug(element_check.tag_name)
