@@ -125,7 +125,7 @@ class Chrome:
                         self.logger.debug(f"alert: {alert.text}")
                         sleep(0.3)
                         alert.accept()
-                        sleep(1)
+                    sleep(1)
                 else:
                     self.logger.debug(element_check.get_attribute('innerHTML'))
                     self.logger.debug(element_check.tag_name)
