@@ -13,14 +13,9 @@ from time import sleep
 
 class Chrome:
 
-    def __init__(self, logger: LoggerAdapter, url: str = 'https://office.hiworks.com/testworks.onhiworks.com/',
-                 options: dict = None):
+    def __init__(self, logger: LoggerAdapter, driver: WebDriver, url: str):
         current_path = os.path.dirname(os.path.abspath(__file__))
-
-        if options is None:
-            options = {'chromedriver': os.path.join(current_path, 'chromedriver')}
-
-        self.driver = webdriver.Chrome(options['chromedriver'])
+        self.driver = driver
         self.logger = logger
         self.url = url
 
