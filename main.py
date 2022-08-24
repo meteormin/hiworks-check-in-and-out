@@ -15,14 +15,14 @@ def config(file_path: str = 'hiworks.ini'):
     return config_parser
 
 
-def get_driver(url: str):
+def get_driver(tag: str, url: str):
     current_path = os.path.dirname(os.path.abspath(__file__))
     options = webdriver.ChromeOptions()
     options.add_argument('headless')
 
     return Chrome(
-        Log.logger('checkin'),
-        webdriver.Chrome(executable_path=os.path.join(current_path, 'browser/chromedriver'), options=options),
+        Log.logger(tag),
+        webdriver.Chrome(os.path.join(current_path, 'browser/chromedriver'), options=options),
         url
     )
 
@@ -47,7 +47,7 @@ def checkin(login_id: str = None, passwd: str = None):
 
     url = conf['default']['url']
 
-    browser = get_driver(url)
+    browser = get_driver('checkin', url)
     browser.checkin(login_id, passwd)
 
     return 0
@@ -67,7 +67,7 @@ def checkout(login_id: str = None, passwd: str = None):
 
     url = conf['default']['url']
 
-    browser = get_driver(url)
+    browser = get_driver('checkout', url)
     browser.checkout(login_id, passwd)
 
     return 0
