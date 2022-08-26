@@ -17,3 +17,4 @@ trio==0.21.0
 trio-websocket==0.9.2
 urllib3==1.26.11
 pytimekr==0.1.0
+webdriver-manager==3.8.3

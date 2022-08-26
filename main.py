@@ -2,6 +2,8 @@ import click
 import os
 import datetime
 from selenium import webdriver
+from selenium.webdriver.chrome.service import Service
+from webdriver_manager.chrome import ChromeDriverManager
 from browser.chrome import Chrome
 from logger.log import Log
 from utils.date import is_holidays
@@ -19,10 +21,11 @@ def get_driver(tag: str, url: str):
     current_path = os.path.dirname(os.path.abspath(__file__))
     options = webdriver.ChromeOptions()
     options.add_argument('headless')
+    service = Service(ChromeDriverManager().install())
 
     return Chrome(
         Log.logger(tag),
-        webdriver.Chrome(os.path.join(current_path, 'browser/chromedriver'), options=options),
+        webdriver.Chrome(service=service, options=options),
         url
     )
 
