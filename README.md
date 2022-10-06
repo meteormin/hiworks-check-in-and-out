@@ -17,6 +17,14 @@ pip3 install -r requirements.txt
 
 ## Usage
 
+### hiworks.ini
+```ini
+[default]
+url=https://office.hiworks.com/testworks.onhiworks.com/
+id=your-id
+password=your-password
+```
+
 ### Python CLI
 ```shell
 python3 main.py checkin --id={your-hiworks-id} --passwd={your-hiworks-password}
@@ -26,7 +34,7 @@ python3 main.py checkout --id={your-hiworks-id} --passwd={your-hiworks-password}
 
 ### Shell Script
 ```shell
-sh ./startup.sh
+sh ./startup.sh {checkin or checkout}
 # or
-./startup.sh
+./startup.sh {checkin or checkout}
 ```
