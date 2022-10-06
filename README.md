@@ -17,8 +17,16 @@ pip3 install -r requirements.txt
 
 ## Usage
 
+### Python CLI
 ```shell
 python3 main.py checkin --id={your-hiworks-id} --passwd={your-hiworks-password}
 
 python3 main.py checkout --id={your-hiworks-id} --passwd={your-hiworks-password}
+```
+
+### Shell Script
+```shell
+sh ./startup.sh
+# or
+./startup.sh
 ```
