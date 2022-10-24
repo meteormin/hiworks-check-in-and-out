@@ -4,6 +4,8 @@ from selenium.common import TimeoutException, NoSuchElementException
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as ec
+
+from browser.login_data import LoginData
 from logger.logger_adapter import LoggerAdapter
 from browser.hiworks.elements import Check, Checkin, Checkout
 from browser.hiworks.elements import LoginElement
@@ -129,14 +131,10 @@ class Chrome:
 
         return True
 
-    def checkin(self, _id: str, passwd: str):
-        checkin_data = Checkin()
-
-        driver = self._login(_id, passwd)
+    def checkin(self, login_data: LoginData, checkin_data: Checkin):
+        driver = self._login(login_data.login_id, login_data.login_pass)
         return self._check(driver, checkin_data)
 
-    def checkout(self, _id, passwd):
-        checkout_data = Checkout()
-
-        driver = self._login(_id, passwd)
+    def checkout(self, login_data: LoginData, checkout_data: Checkout):
+        driver = self._login(login_data.login_id, login_data.login_pass)
         return self._check(driver, checkout_data)
