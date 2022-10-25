@@ -34,6 +34,11 @@ def get_browser(tag: str, url: str):
     )
 
 
+def get_local_storage(path: str) -> LocalDriver:
+    data = LocalSchema()
+    return LocalDriver(path, data)
+
+
 @click.group()
 def cli():
     pass
@@ -55,19 +60,16 @@ def checkin(login_id: str = None, passwd: str = None):
     url = conf['default']['url']
 
     browser = get_browser('checkin', url)
+    browser.checkin(LoginData(login_id=login_id, login_pass=passwd), Checkin())
 
     now = datetime.now()
+    data_store = get_local_storage(PATH['database'])
 
-    data = LocalSchema({
-        'login_id': login_id,
-        'checkin_at': now.strftime('%H:%M:%S'),
-        'checkout_at': None,
-        'work_hour': 0
-    })
-
-    data_store = LocalDriver(PATH['database'], data)
-
-    browser.checkin(LoginData(login_id=login_id, login_pass=passwd), Checkin())
+    data = data_store.data
+    data.login_id = login_id
+    data.checkin_at = now.strftime('%Y-%m-%d')
+    data.checkout_at = None
+    data.work_hour = None
 
     if data_store.save(now.strftime('%Y-%m-%d'), data):
         return 0
@@ -90,16 +92,12 @@ def checkout(login_id: str = None, passwd: str = None):
     url = conf['default']['url']
 
     browser = get_browser('checkout', url)
+    browser.checkout(LoginData(login_id=login_id, login_pass=passwd), Checkout())
 
-    data = LocalSchema()
-
-    data_store = LocalDriver(PATH['database'], data)
+    data_store = get_local_storage(PATH['database'])
 
     now = datetime.now()
-
     data = data_store.get(now.strftime('%Y-%m-%d'))
-
-    browser.checkout(LoginData(login_id=login_id, login_pass=passwd), Checkout())
 
     if data is not None:
         data.checkout_at = now.strftime('%H:%M:%S')

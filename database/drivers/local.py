@@ -6,9 +6,9 @@ from utils import object
 
 class LocalSchema:
     login_id: str
-    checkin_at: Union[str, None]
-    checkout_at: Union[str, None]
-    work_hour: int = 0
+    checkin_at: Union[str, None] = None
+    checkout_at: Union[str, None] = None
+    work_hour: Union[str, None] = None
 
     def __init__(self, json_dict: dict = None):
         if json_dict is None:
