@@ -180,17 +180,21 @@ def check_and_alert():
     if data.work_hour is not None:
         click.echo(f"already checkout: {data.checkout_at}")
         click.echo(f"work hours: {data.work_hour}")
+
         logger.debug(f"already checkout: {data.checkout_at}")
+        logger.info(f"work hours: {data.work_hour}")
     else:
         checker = Checker(data_store)
         work = checker.get_work_hour_today()
         click.echo(f"work hours: {seconds_to_hours(work['work'])}")
-
+        logger.info(f"work hours: {seconds_to_hours(work['work'])}")
         if work['left'] < 0:
             click.echo(f"left hours: {seconds_to_hours(work['left'])}")
+            logger.info(f"left hours: {seconds_to_hours(work['left'])}")
             logger.debug(f"already checkout: {data.checkout_at}")
         else:
             click.echo(f"over hours: {seconds_to_hours(work['left'])}")
+            logger.info(f"over hours: {seconds_to_hours(work['left'])}")
             if work['left'] <= 600:
                 logger.debug(f"you must checkout!!")
 
