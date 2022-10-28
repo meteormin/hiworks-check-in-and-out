@@ -14,10 +14,10 @@ from schedule.checker import Checker
 from utils.date import is_holidays, seconds_to_hours
 from configparser import ConfigParser
 from database.drivers.local import LocalSchema, LocalDriver
-from definitions import PATH, WORK_HOURS
+from definitions import PATH
 
 
-def config(file_path: str = 'hiworks.ini'):
+def config(file_path: str):
     current_path = os.path.dirname(os.path.abspath(__file__))
     config_parser = ConfigParser()
     config_parser.read(os.path.join(current_path, file_path))
@@ -45,6 +45,14 @@ def get_local_storage(path: str) -> LocalDriver:
     return LocalDriver(path, data)
 
 
+def get_mailer(mail_config: dict) -> SimpleMailer:
+    return SimpleMailer(
+        host=mail_config['outlook']['url'],
+        login_id=mail_config['outlook']['id'],
+        login_pass=mail_config['outlook']['password']
+    )
+
+
 @click.group()
 def cli():
     pass
@@ -58,7 +66,7 @@ def checkin(login_id: str = None, passwd: str = None):
         click.echo('today is holiday')
         return 1
 
-    conf = config()
+    conf = config('hiworks.ini')
     if login_id is None or passwd is None:
         login_id = conf['default']['id']
         passwd = conf['default']['password']
@@ -76,7 +84,7 @@ def checkin(login_id: str = None, passwd: str = None):
     data.checkout_at = None
     data.work_hour = None
 
-    if check_time is None:
+    if check_time is None and check_time == '00:00:00':
         data.checkin_at = now.strftime('%Y-%m-%d')
     else:
         data.checkin_at = check_time
@@ -94,7 +102,7 @@ def checkout(login_id: str = None, passwd: str = None):
     if is_holidays(date=date.today()):
         return 1
 
-    conf = config()
+    conf = config('hiworks.ini')
     if login_id is None or passwd is None:
         login_id = conf['default']['id']
         passwd = conf['default']['password']
@@ -110,7 +118,7 @@ def checkout(login_id: str = None, passwd: str = None):
     data = data_store.get(now.strftime('%Y-%m-%d'))
 
     if data is not None:
-        if check_time is None:
+        if check_time is None and check_time == '00:00:00':
             data.checkout_at = now.strftime('%H:%M:%S')
         else:
             data.checkout_at = check_time
@@ -158,9 +166,15 @@ def check_and_alert():
     data = data_store.get(now.strftime('%Y-%m-%d'))
     logger = get_logger('check-and-alert')
 
+    mail_config = config('mailer.ini')
+    mailer = get_mailer(mail_config)
+
     if data.checkin_at is None:
         click.echo('not yet checkin')
         logger.debug('not yet checkin')
+        hiworks = config('hiworks.ini')
+
+        mailer.send(mail_config['outlook']['id'], f"[Alert] You Don't Checkin...", f"go: {hiworks['url']}")
         return 1
 
     if data.work_hour is not None:
@@ -179,14 +193,6 @@ def check_and_alert():
             click.echo(f"over hours: {seconds_to_hours(work['left'])}")
             if work['left'] <= 600:
                 logger.debug(f"you must checkout!!")
-
-                mail_config = config('mailer')
-
-                mailer = SimpleMailer(
-                    host=mail_config['outlook']['host'],
-                    login_id=mail_config['outlook']['id'],
-                    login_pass=mail_config['outlook']['password']
-                )
 
                 mailer.send(mail_config['outlook']['id'], '[Alert] You must checkout!!',
                             f"You must checkout, left {seconds_to_hours(work['left'])}")
