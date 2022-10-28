@@ -10,3 +10,5 @@ PATH = {
     'schedule': os.path.join(BASE_PATH, 'schedule'),
     'utils': os.path.join(BASE_PATH, 'utils'),
 }
+
+WORK_HOURS = 9

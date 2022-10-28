@@ -1,16 +1,16 @@
-from selenium import webdriver
+import os
+from datetime import datetime
+from time import sleep
+from typing import Union
 from selenium.webdriver.remote.webdriver import WebDriver
 from selenium.common import TimeoutException, NoSuchElementException
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as ec
-
-from browser.login_data import LoginData
 from logger.logger_adapter import LoggerAdapter
+from browser.login_data import LoginData
 from browser.hiworks.elements import Check, Checkin, Checkout
 from browser.hiworks.elements import LoginElement
-import os
-from time import sleep
 
 
 class Chrome:
@@ -66,13 +66,13 @@ class Chrome:
 
         return self.driver
 
-    def _check(self, driver: WebDriver, check_data: Check) -> bool:
+    def _check(self, driver: WebDriver, check_data: Check) -> Union[str, None]:
         if isinstance(check_data, Checkin):
             index = 0
         elif isinstance(check_data, Checkout):
             index = 1
         else:
-            return False
+            return None
 
         driver.implicitly_wait(2)
         sleep(0.3)
@@ -109,6 +109,7 @@ class Chrome:
         sleep(0.3)
 
         try:
+            check_time = None
             if element is not None:
                 element_detail = driver.find_element(By.CSS_SELECTOR, check_data.detail)
                 element_check = element_detail.find_elements(By.CSS_SELECTOR, check_data.check_btn)[index]
@@ -117,19 +118,30 @@ class Chrome:
                     self.logger.debug(element_text.get_attribute('textContent'))
                     self.logger.debug(element_check.tag_name)
                     element_check.click()
-                    if index == 1:
+
+                    if index == 0:
+                        sleep(0.3)
+                        element_check_time = element_detail.find_elements(By.CSS_SELECTOR, check_data.check_time_div)
+                        check_time = element_check_time[index].get_attribute('innerHTML')
+                        check_time = check_time.strip()
+                        self.logger.debug(check_time)
+
+                    elif index == 1:
                         alert = driver.switch_to.alert
                         self.logger.debug(f"alert: {alert.text}")
                         sleep(0.3)
                         alert.accept()
+                        check_time = datetime.now().strftime("%H:%M:%S")
                     sleep(1)
+
                 else:
                     self.logger.debug(element_check.get_attribute('innerHTML'))
                     self.logger.debug(element_check.tag_name)
+
+            return check_time
         except NoSuchElementException as e:
             self.logger.error(e)
-
-        return True
+            return None
 
     def checkin(self, login_data: LoginData, checkin_data: Checkin):
         driver = self._login(login_data.login_id, login_data.login_pass)

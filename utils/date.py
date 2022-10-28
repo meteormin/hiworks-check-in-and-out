@@ -22,3 +22,10 @@ def seconds_to_hours(seconds: float) -> str:
     seconds %= 60
 
     return "%d:%02d:%02d" % (hour, minutes, seconds)
+
+
+def hours_to_seconds(hours: str) -> float:
+    [hour, minutes, seconds] = hours.split(':')
+    hs = hour * 3600
+    ms = minutes * 60
+    return seconds + ms + hs

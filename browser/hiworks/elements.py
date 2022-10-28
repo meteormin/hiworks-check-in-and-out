@@ -17,6 +17,7 @@ class Check:
     check_btn: str = 'button'
     check_text_div: str = '.check-btn'
     check_text_content: str = ''
+    check_time_div: str = '.check-time'
 
 
 @dataclass(frozen=True)
