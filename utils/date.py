@@ -15,13 +15,18 @@ def is_holidays(date: datetime.date = None):
 
 
 def seconds_to_hours(seconds: float) -> str:
+    if seconds < 0:
+        prev_ch = '-'
+    else:
+        prev_ch = '+'
+
     seconds = seconds % (24 * 3600)
     hour = seconds // 3600
     seconds %= 3600
     minutes = seconds // 60
     seconds %= 60
 
-    return "%d:%02d:%02d" % (hour, minutes, seconds)
+    return f"{prev_ch}%d:%02d:%02d" % (hour, minutes, seconds)
 
 
 def hours_to_seconds(hours: str) -> float:

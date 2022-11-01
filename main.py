@@ -138,23 +138,24 @@ def check_work_hour():
 
     data_store = get_local_storage(PATH['database'])
     data = data_store.get(now.strftime('%Y-%m-%d'))
+    logger = get_logger('check-work-hour')
 
     if data.checkin_at is None:
-        click.echo('not yet checkin')
+        logger.info('not yet checkin')
         return 1
 
     if data.work_hour is not None:
-        click.echo(f"already checkout: {data.checkout_at}")
-        click.echo(f"work hours: {data.work_hour}")
+        logger.info(f"already checkout: {data.checkout_at}")
+        logger.info(f"work hours: {data.work_hour}")
     else:
         checker = Checker(data_store)
         work = checker.get_work_hour_today()
-        click.echo(f"work hours: {seconds_to_hours(work['work'])}")
+        logger.info(f"work hours: {seconds_to_hours(work['work'])}")
 
-        if work['left'] < 0:
-            click.echo(f"left hours: {seconds_to_hours(work['left'])}")
+        if work['left'] > 0:
+            logger.info(f"left hours: {seconds_to_hours(work['left'])}")
         else:
-            click.echo(f"over hours: {seconds_to_hours(work['left'])}")
+            logger.info(f"over hours: {seconds_to_hours(work['left'])}")
     return 0
 
 
@@ -178,28 +179,26 @@ def check_and_alert():
         return 1
 
     if data.work_hour is not None:
-        click.echo(f"already checkout: {data.checkout_at}")
-        click.echo(f"work hours: {data.work_hour}")
-
         logger.debug(f"already checkout: {data.checkout_at}")
         logger.info(f"work hours: {data.work_hour}")
     else:
         checker = Checker(data_store)
         work = checker.get_work_hour_today()
-        click.echo(f"work hours: {seconds_to_hours(work['work'])}")
         logger.info(f"work hours: {seconds_to_hours(work['work'])}")
-        if work['left'] < 0:
-            click.echo(f"left hours: {seconds_to_hours(work['left'])}")
+        if work['left'] > 0:
             logger.info(f"left hours: {seconds_to_hours(work['left'])}")
-            logger.debug(f"already checkout: {data.checkout_at}")
-        else:
-            click.echo(f"over hours: {seconds_to_hours(work['left'])}")
-            logger.info(f"over hours: {seconds_to_hours(work['left'])}")
-            if work['left'] <= 600:
-                logger.debug(f"you must checkout!!")
 
-                mailer.send(mail_config['outlook']['id'], '[Alert] You must checkout!!',
-                            f"You must checkout, left {seconds_to_hours(work['left'])}")
+            if data.checkout_at is not None:
+                logger.debug(f"already checkout: {data.checkout_at}")
+        else:
+            logger.info(f"over hours: {seconds_to_hours(work['left'])}")
+
+        if work['left'] <= 600:
+            logger.debug(f"you must checkout!!")
+
+            mailer.send(mail_config['outlook']['id'], '[Alert] You must checkout!!',
+                        f"You must checkout, left {seconds_to_hours(work['left'])}")
+
     return 0
 
 
