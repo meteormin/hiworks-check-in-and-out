@@ -27,9 +27,9 @@ password=your-password
 
 ### Python CLI
 ```shell
-python3 main.py checkin --id={your-hiworks-id} --passwd={your-hiworks-password}
+python3 cli.py checkin --id={your-hiworks-id} --passwd={your-hiworks-password}
 
-python3 main.py checkout --id={your-hiworks-id} --passwd={your-hiworks-password}
+python3 cli.py checkout --id={your-hiworks-id} --passwd={your-hiworks-password}
 ```
 
 ### Shell Script
