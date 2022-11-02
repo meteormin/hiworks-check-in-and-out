@@ -5,7 +5,7 @@ from email.mime.text import MIMEText
 class SimpleMailer:
 
     def __init__(self, host: str, login_id: str, login_pass: str):
-        self.session = smtplib.SMTP('outlook.office365.com', 587)
+        self.session = smtplib.SMTP(host, 587)
         self.session.starttls()
         self.login_id = login_id
         self.login_pass = login_pass
