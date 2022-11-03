@@ -3,6 +3,7 @@ import os
 BASE_PATH = os.path.dirname(os.path.abspath(__file__))
 
 PATH = {
+    'base': BASE_PATH,
     'browser': os.path.join(BASE_PATH, 'browser'),
     'database': os.path.join(BASE_PATH, 'database'),
     'logger': os.path.join(BASE_PATH, 'logger'),

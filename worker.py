@@ -1,5 +1,6 @@
 import os
 import time
+import subprocess
 from typing import Dict
 from datetime import datetime, date
 from configparser import ConfigParser
@@ -21,6 +22,15 @@ class Worker:
 
     def __init__(self, constants: Dict[str, str]):
         self.__constants = constants
+        logger = self.get_logger('worker')
+        now = datetime.now()
+        data_store = self.get_local_storage(self.__constants['database'])
+
+        logger.debug('start up worker')
+
+        if data_store.get(now.strftime('%Y-%m-%d')) is None:
+            logger.info('daily pip update...')
+            subprocess.run(f"pip3 install -r {constants['base']}/requirements.txt", shell=True)
 
     @classmethod
     def config(cls, file_path: str):

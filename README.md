@@ -34,7 +34,7 @@ python3 cli.py checkout --id={your-hiworks-id} --passwd={your-hiworks-password}
 
 ### Shell Script
 ```shell
-sh ./startup.sh {checkin or checkout}
+sh ./hiworks-checker.sh {checkin or checkout}
 # or
-./startup.sh {checkin or checkout}
+./hiworks-checker.sh {checkin or checkout}
 ```
