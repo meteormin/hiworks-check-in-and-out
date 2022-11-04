@@ -1,7 +1,7 @@
 import os
 import time
 import subprocess
-from typing import Dict
+from typing import Dict, Union
 from datetime import datetime, date
 from configparser import ConfigParser
 from selenium import webdriver
@@ -9,7 +9,7 @@ from selenium.webdriver.chrome.service import Service
 from webdriver_manager.chrome import ChromeDriverManager
 from browser.chrome import Chrome
 from logger.log import Log
-from browser.hiworks.elements import Checkin, Checkout
+from browser.hiworks.elements import Checkin, Checkout, Check
 from browser.login_data import LoginData
 from schedule.checker import Checker
 from utils.date import is_holidays, seconds_to_hours
@@ -161,12 +161,40 @@ class Worker:
                 logger.info(f"over hours: {seconds_to_hours(work['left'])}")
         return 0
 
+    @classmethod
+    def update_work_time(cls, data_store: LocalDriver, date_id: str, check_time: Dict[str, Union[str, None]]):
+        data = data_store.get(date_id)
+
+        if data is not None:
+            data.checkin_at = check_time['checkin_at']
+            data.checkout_at = check_time['checkout_at']
+
+            return data_store.save(date_id, data)
+        return None
+
     def check_and_alert(self):
+        logger = self.get_logger('check-and-alert')
+
         now = datetime.now()
+        conf = self.config('hiworks.ini')
+
+        login_id = conf['default']['id']
+        passwd = conf['default']['password']
+        url = conf['default']['url']
+
+        browser = self.get_browser('check-and-alert', url)
+        check_time = browser.check_work(LoginData(login_id, passwd), Check())
 
         data_store = self.get_local_storage(self.__constants['database'])
+
+        if check_time is not None:
+            self.update_work_time(data_store, now.strftime('%Y-%m-%d'), check_time)
+
         data = data_store.get(now.strftime('%Y-%m-%d'))
-        logger = self.get_logger('check-and-alert')
+
+        if data is None:
+            logger.error('you are not checkin')
+            return 1
 
         mail_config = self.config('mailer.ini')
         mailer = self.get_mailer(mail_config)

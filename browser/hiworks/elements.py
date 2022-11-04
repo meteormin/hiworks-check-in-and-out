@@ -23,8 +23,10 @@ class Check:
 @dataclass(frozen=True)
 class Checkin(Check):
     check_text_content: str = '출근하기'
+    index: int = 0
 
 
 @dataclass(frozen=True)
 class Checkout(Check):
     check_text_content: str = '퇴근하기'
+    index: int = 1

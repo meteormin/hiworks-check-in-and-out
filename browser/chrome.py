@@ -5,6 +5,7 @@ from typing import Union
 from selenium.webdriver.remote.webdriver import WebDriver
 from selenium.common import TimeoutException, NoSuchElementException
 from selenium.webdriver.common.by import By
+from selenium.webdriver.remote.webelement import WebElement
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as ec
 from logger.logger_adapter import LoggerAdapter
@@ -66,18 +67,9 @@ class Chrome:
 
         return self.driver
 
-    def _check(self, driver: WebDriver, check_data: Check) -> Union[str, None]:
-        if isinstance(check_data, Checkin):
-            index = 0
-        elif isinstance(check_data, Checkout):
-            index = 1
-        else:
-            return None
-
-        driver.implicitly_wait(2)
-        sleep(0.3)
-
+    def _open_div(self, driver: WebDriver, check_data: Check):
         element = None
+
         try:
             WebDriverWait(driver, 5).until(
                 ec.presence_of_element_located((By.CSS_SELECTOR, check_data.wrap_class))
@@ -103,50 +95,137 @@ class Chrome:
                 ec.presence_of_element_located((By.CSS_SELECTOR, check_data.detail))
             )
 
-            self.logger.debug("info: page is ready")
+            self.logger.debug("page is ready")
         except TimeoutException:
             self.logger.error('timeout 5s')
         sleep(0.3)
 
+        return element
+
+    def _check(self, driver: WebDriver, check_data: Check) -> Union[WebElement, None]:
+        if isinstance(check_data, Checkin):
+            index = 0
+        elif isinstance(check_data, Checkout):
+            index = 1
+        elif isinstance(check_data, Check):
+            index = None
+        else:
+            return None
+
+        driver.implicitly_wait(2)
+        sleep(0.3)
+
+        element = self._open_div(driver, check_data)
+
         try:
-            check_time = None
             if element is not None:
                 element_detail = driver.find_element(By.CSS_SELECTOR, check_data.detail)
-                element_check = element_detail.find_elements(By.CSS_SELECTOR, check_data.check_btn)[index]
-                element_text = element_check.find_element(By.CSS_SELECTOR, check_data.check_text_div)
-                if element_text.get_attribute('textContent') == check_data.check_text_content:
-                    self.logger.debug(element_text.get_attribute('textContent'))
-                    self.logger.debug(element_check.tag_name)
-                    element_check.click()
 
-                    if index == 0:
-                        sleep(0.3)
-                        element_check_time = element_detail.find_elements(By.CSS_SELECTOR, check_data.check_time_div)
-                        check_time = element_check_time[index].get_attribute('innerHTML')
-                        check_time = check_time.strip()
-                        self.logger.debug(check_time)
-
-                    elif index == 1:
-                        alert = driver.switch_to.alert
-                        self.logger.debug(f"alert: {alert.text}")
-                        sleep(0.3)
-                        alert.accept()
-                        check_time = datetime.now().strftime("%H:%M:%S")
-                    sleep(1)
-
-                else:
-                    self.logger.debug(element_check.get_attribute('innerHTML'))
-                    self.logger.debug(element_check.tag_name)
-
-            return check_time
+                return element_detail
         except NoSuchElementException as e:
             self.logger.error(e)
             return None
 
+    def _check_btn_click(self, check_btn: WebElement, check_data: Check) -> bool:
+        element_text = check_btn.find_element(By.CSS_SELECTOR, check_data.check_text_div)
+        try:
+            if element_text.get_attribute('textContent') == check_data.check_text_content:
+                self.logger.debug(element_text.get_attribute('textContent'))
+                self.logger.debug(check_btn.tag_name)
+                check_btn.click()
+                sleep(0.3)
+
+            else:
+                self.logger.debug(check_btn.get_attribute('innerHTML'))
+                self.logger.debug(check_btn.tag_name)
+
+            return True
+        except NoSuchElementException as e:
+            self.logger.error(e)
+            return False
+
     def checkin(self, login_data: LoginData, checkin_data: Checkin):
         driver = self._login(login_data.login_id, login_data.login_pass)
-        return self._check(driver, checkin_data)
+        element_detail = self._check(driver, checkin_data)
+        check_time = None
+        if element_detail is not None:
+            try:
+                element_check = element_detail.find_elements(By.CSS_SELECTOR, checkin_data.check_btn)[
+                    checkin_data.index]
+
+                if self._check_btn_click(element_check, checkin_data):
+                    element_check_time = element_detail.find_elements(By.CSS_SELECTOR, checkin_data.check_time_div)
+                    check_time = element_check_time[checkin_data.index].get_attribute('innerHTML')
+                    check_time = check_time.strip()
+                    self.logger.debug(check_time)
+                else:
+                    self.logger.error('failed click: not found check btn')
+
+            except NoSuchElementException as e:
+                self.logger.error(e)
+
+            sleep(1)
+
+        return check_time
 
     def checkout(self, login_data: LoginData, checkout_data: Checkout):
         driver = self._login(login_data.login_id, login_data.login_pass)
-        return self._check(driver, checkout_data)
+        element_detail = self._check(driver, checkout_data)
+        check_time = None
+        if element_detail is not None:
+            try:
+                element_check = element_detail.find_elements(By.CSS_SELECTOR, checkout_data.check_btn)[
+                    checkout_data.index]
+
+                if self._check_btn_click(element_check, checkout_data):
+                    alert = driver.switch_to.alert
+                    self.logger.debug(f"alert: {alert.text}")
+                    alert.accept()
+                    check_time = datetime.now().strftime("%H:%M:%S")
+                else:
+                    self.logger.error('failed click: not found check btn')
+
+            except NoSuchElementException as e:
+                self.logger.error(e)
+
+            sleep(1)
+
+        return check_time
+
+    def check_work(self, login_data: LoginData, check_data: Check):
+        driver = self._login(login_data.login_id, login_data.login_pass)
+        element_detail = self._check(driver, check_data)
+        check_work_time = {'checkin_at': None, 'checkout_at': None}
+
+        if element_detail is not None:
+            try:
+                element_checkin = element_detail.find_elements(By.CSS_SELECTOR, check_data.check_btn)[0]
+                element_checkout = element_detail.find_elements(By.CSS_SELECTOR, check_data.check_btn)[1]
+
+                if element_checkin:
+                    element_check_time = element_detail.find_elements(By.CSS_SELECTOR, check_data.check_time_div)
+                    check_time = element_check_time[0].get_attribute('innerHTML')
+                    checkin_time = check_time.strip()
+                    self.logger.debug(checkin_time)
+
+                    if checkin_time == '00:00:00':
+                        checkin_time = None
+
+                    check_work_time['checkin_at'] = checkin_time
+
+                if element_checkout:
+                    element_check_time = element_detail.find_elements(By.CSS_SELECTOR, check_data.check_time_div)
+                    check_time = element_check_time[1].get_attribute('innerHTML')
+                    checkout_time = check_time.strip()
+                    self.logger.debug(checkout_time)
+
+                    if checkout_time == '00:00:00':
+                        checkout_time = None
+
+                    check_work_time['checkout_at'] = checkout_time
+
+            except NoSuchElementException as e:
+                self.logger.error(e)
+
+            return check_work_time
+        return None
