@@ -4,8 +4,8 @@
 
 ### requirements
 
-- python3.8
-- pip 22.2.2
+- python ^3.8
+- pip ^22.2.2
 
 **Packages**
 
