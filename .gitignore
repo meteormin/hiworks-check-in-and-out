@@ -5,3 +5,5 @@ venv
 .idea
 hiworks.ini
 mailer.ini
+.DS_Store
+__pycache__
