@@ -10,9 +10,9 @@
 **Packages**
 
 ```requirements.txt
-click>=8.1.3
-selenium==4.5.0
-webdriver-manager==3.8.4
+click~=8.1.3
+selenium~=4.5.0
+webdriver-manager~=3.8.4
 pytimekr~=0.1.0
 packaging~=21.3
 ```
