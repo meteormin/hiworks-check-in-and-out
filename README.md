@@ -4,7 +4,7 @@
 
 ### requirements
 
-- python 3.8 / 3.9 / 3.10
+- python 3.8 / 3.9
 - pip ^22.2.2
 
 **Packages**
