@@ -2,43 +2,18 @@ import json
 import os
 from typing import Union
 from utils import object
+from dataclasses import dataclass
 
 
+@dataclass()
 class LocalSchema:
-    login_id: str
+    login_id: Union[str, None] = None
     checkin_at: Union[str, None] = None
     checkout_at: Union[str, None] = None
     work_hour: Union[str, None] = None
 
-    def __init__(self, json_dict: dict = None):
-        if json_dict is None:
-            return
-
-        if 'login_id' in json_dict:
-            self.login_id = json_dict['login_id']
-
-        if 'checkin_at' in json_dict:
-            self.checkin_at = json_dict['checkin_at']
-
-        if 'checkout_at' in json_dict:
-            self.checkout_at = json_dict['checkout_at']
-
-        if 'work_hour' in json_dict:
-            self.work_hour = json_dict['work_hour']
-
     def map(self, data: dict):
-        if 'login_id' in data:
-            self.login_id = data['login_id']
-
-        if 'checkin_at' in data:
-            self.checkin_at = data['checkin_at']
-
-        if 'checkout_at' in data:
-            self.checkout_at = data['checkout_at']
-
-        if 'work_hour' in data:
-            self.work_hour = data['work_hour']
-        return self
+        return object.map_from_dict(self, data)
 
 
 class LocalDriver:
