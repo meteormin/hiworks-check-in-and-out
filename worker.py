@@ -161,17 +161,6 @@ class Worker:
                 logger.info(f"over hours: {seconds_to_hours(work['left'])}")
         return 0
 
-    @classmethod
-    def update_work_time(cls, data_store: LocalDriver, date_id: str, check_time: Dict[str, Union[str, None]]):
-        data = data_store.get(date_id)
-
-        if data is not None:
-            data.checkin_at = check_time['checkin_at']
-            data.checkout_at = check_time['checkout_at']
-
-            return data_store.save(date_id, data)
-        return None
-
     def check_and_alert(self):
         logger = self.get_logger('check-and-alert')
 
@@ -188,7 +177,7 @@ class Worker:
         data_store = self.get_local_storage(self.__constants['database'])
 
         if check_time is not None:
-            self.update_work_time(data_store, now.strftime('%Y-%m-%d'), check_time)
+            data_store.update_work_time(now.strftime('%Y-%m-%d'), check_time)
 
         data = data_store.get(now.strftime('%Y-%m-%d'))
 
