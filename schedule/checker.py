@@ -1,4 +1,4 @@
-from database.drivers.local import LocalDriver
+from database.drivers.abstracts import Driver
 from datetime import datetime
 from definitions import WORK_HOURS
 import time
@@ -7,7 +7,7 @@ from typing import Union, Dict
 
 class Checker:
 
-    def __init__(self, data_store: LocalDriver):
+    def __init__(self, data_store: Driver):
         self.data_store = data_store
 
     def get_work_hour_today(self) -> Union[Dict[str, float], None]:

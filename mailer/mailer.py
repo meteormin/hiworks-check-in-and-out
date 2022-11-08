@@ -1,8 +1,10 @@
 import smtplib
 from email.mime.text import MIMEText
 
+from mailer.abstracts import Mailer
 
-class SimpleMailer:
+
+class SimpleMailer(Mailer):
 
     def __init__(self, host: str, login_id: str, login_pass: str):
         self.session = smtplib.SMTP(host, 587)

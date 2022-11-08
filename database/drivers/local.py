@@ -1,12 +1,14 @@
 import json
 import os
 from typing import Union, Dict
+
+from database.drivers.abstracts import Driver, Schema
 from utils import object
 from dataclasses import dataclass
 
 
 @dataclass()
-class LocalSchema:
+class LocalSchema(Schema):
     login_id: Union[str, None] = None
     checkin_at: Union[str, None] = None
     checkout_at: Union[str, None] = None
@@ -16,7 +18,7 @@ class LocalSchema:
         return object.map_from_dict(self, data)
 
 
-class LocalDriver:
+class LocalDriver(Driver):
 
     def __init__(self, base_path: str, data_object: LocalSchema):
         self.path = os.path.join(base_path, 'local')
@@ -48,12 +50,3 @@ class LocalDriver:
             rs = f.write(json_string)
 
         return rs
-
-    def update_work_time(self, date_id: str, check_time: Dict[str, Union[str, None]]):
-        data = self.get(date_id)
-        if data is not None:
-            data.checkin_at = check_time['checkin_at']
-            data.checkout_at = check_time['checkout_at']
-
-            return self.save(date_id, data)
-        return None
