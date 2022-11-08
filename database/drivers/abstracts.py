@@ -1,4 +1,7 @@
 from abc import ABC
+from typing import TypeVar, Generic
+
+T = TypeVar('T')
 
 
 class Schema(ABC):
@@ -7,10 +10,15 @@ class Schema(ABC):
         pass
 
 
-class Driver(ABC):
+class Driver(ABC, Generic[T]):
     data: Schema
+    config: dict
 
-    def get(self, data_id) -> Schema:
+    def __init__(self, config: dict, data_object: T):
+        self.config = config
+        self.data = data_object
+
+    def get(self, data_id) -> T:
         pass
 
     def all(self) -> list:
