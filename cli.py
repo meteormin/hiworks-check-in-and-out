@@ -4,6 +4,11 @@ from worker import Worker
 
 
 def get_worker():
+    """
+    get worker object
+    :return: worker object
+    :rtype: Worker
+    """
     return Worker(PATH)
 
 
@@ -16,6 +21,15 @@ def cli():
 @click.option('--login_id', required=False, type=click.types.STRING, help='hiworks id')
 @click.option('--passwd', required=False, type=click.types.STRING, help='hiworks password')
 def checkin(login_id: str = None, passwd: str = None):
+    """
+    check in
+    :param login_id:
+    :type login_id: str | None
+    :param passwd:
+    :type passwd: str | None
+    :return:
+    :rtype: int
+    """
     return get_worker().checkin(login_id, passwd)
 
 
@@ -23,16 +37,35 @@ def checkin(login_id: str = None, passwd: str = None):
 @click.option('--login_id', required=False, type=click.types.STRING, help='hiworks id')
 @click.option('--passwd', required=False, type=click.types.STRING, help='hiworks password')
 def checkout(login_id: str = None, passwd: str = None):
+    """
+    check out
+    :param login_id:
+    :type login_id: str | None
+    :param passwd:
+    :type passwd: str | None
+    :return:
+    :rtype: int
+    """
     return get_worker().checkout(login_id, passwd)
 
 
 @cli.command()
 def check_work_hour():
+    """
+    check your current work hour
+    :return:
+    """
     return get_worker().check_work_hour()
 
 
 @cli.command()
 def check_and_alert():
+    """
+    check your current work hour,
+    if you work hour over 9 hour then send alert mail
+
+    :return:
+    """
     return get_worker().check_and_alert()
 
 

@@ -30,6 +30,11 @@ class Worker:
     __configs: Dict[str, ConfigParser]
 
     def __init__(self, constants: Dict[str, str]):
+        """
+        Worker Constructor
+        :param constants: 상수 값
+        :type: constants: Dict[str, str]
+        """
         now = datetime.now()
 
         self.__constants = constants
@@ -50,18 +55,38 @@ class Worker:
             subprocess.run(f"pip3 install -r {constants['base']}/requirements.txt", shell=True)
 
     @classmethod
-    def __config(cls, file_path: str):
+    def __config(cls, file_path: str) -> ConfigParser:
+        """
+        get config parser
+        :param file_path:
+        :type file_path: str
+        :return: config
+        :rtype: ConfigParser
+        """
         current_path = os.path.dirname(os.path.abspath(__file__))
         config_parser = ConfigParser()
         config_parser.read(os.path.join(current_path, file_path))
         return config_parser
 
     @classmethod
-    def __get_logger(cls, tag: str):
+    def __get_logger(cls, tag: str) -> LoggerAdapter:
+        """
+        get logger
+        :param tag: tag for logging
+        :return: Logger
+        :rtype: LoggerAdapter
+        """
         return Log.logger(tag)
 
     @classmethod
-    def __get_browser(cls, tag: str, url: str):
+    def __get_browser(cls, tag: str, url: str) -> Browser:
+        """
+        get browser
+        :param tag:
+        :param url:
+        :return: browser
+        :rtype: Browser
+        """
         options = webdriver.ChromeOptions()
         options.add_argument('headless')
         service = Service(ChromeDriverManager().install())
@@ -73,19 +98,41 @@ class Worker:
         )
 
     @classmethod
-    def __get_local_storage(cls, path: str) -> LocalDriver:
+    def __get_local_storage(cls, path: str) -> Driver:
+        """
+        get local storage
+        :param path:
+        :type path: str
+        :return: local storage driver
+        :rtype: Driver
+        """
         data = LocalSchema()
         return LocalDriver({'path': path}, data)
 
     @classmethod
-    def __get_mailer(cls, mail_config: dict) -> SimpleMailer:
+    def __get_mailer(cls, mail_config: dict) -> Mailer:
+        """
+        get mailer
+        :param mail_config:
+        :return: mailer
+        :rtype: Mailer
+        """
         return SimpleMailer(
             host=mail_config['outlook']['url'],
             login_id=mail_config['outlook']['id'],
             login_pass=mail_config['outlook']['password']
         )
 
-    def checkin(self, login_id: str, passwd: str):
+    def checkin(self, login_id: str, passwd: str) -> int:
+        """
+        출근하기
+        :param login_id:
+        :type login_id: str
+        :param passwd:
+        :type passwd: str
+        :return: return 0 is success other value is fail
+        :rtype: int
+        """
         if is_holidays(date=date.today()):
             self.__logger.info('today is holiday')
             return 1
@@ -117,7 +164,16 @@ class Worker:
 
         return 1
 
-    def checkout(self, login_id: str = None, passwd: str = None):
+    def checkout(self, login_id: str = None, passwd: str = None) -> int:
+        """
+        퇴근하기
+        :param login_id:
+        :param passwd:
+        :type login_id: str | None
+        :type passwd: str | None
+        :return: return 0 is success other value is fail
+        :rtype: int
+        """
         if is_holidays(date=date.today()):
             self.__logger.info('today is holiday')
             return 1
@@ -149,7 +205,13 @@ class Worker:
 
         return 0
 
-    def check_work_hour(self):
+    def check_work_hour(self) -> int:
+        """
+        check today work hour
+
+        :return:
+        :rtype: int
+        """
         now = datetime.now()
 
         logger = self.__logger
@@ -179,7 +241,13 @@ class Worker:
                 logger.info(f"over hours: {seconds_to_hours(work['left'])}")
         return 0
 
-    def check_and_alert(self):
+    def check_and_alert(self) -> int:
+        """
+        check left time and  when over work time, send alert mail
+
+        :return: 0: success, other value: fail
+        :rtype: int
+        """
         logger = self.__logger
         conf = self.__configs['hiworks']
         browser = self.__browser
@@ -240,6 +308,11 @@ class Worker:
         return 0
 
     def test(self):
+        """
+        just test
+        :return: void
+        :rtype: None
+        """
         hiworks = self.__configs['hiworks']
 
         check_time = self.__browser.check_work(
