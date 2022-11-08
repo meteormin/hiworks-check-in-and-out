@@ -1,7 +1,7 @@
 import os
 from datetime import datetime
 from time import sleep
-from typing import Union
+from typing import Union, Dict
 from selenium.webdriver.remote.webdriver import WebDriver
 from selenium.common import TimeoutException, NoSuchElementException
 from selenium.webdriver.common.by import By
@@ -194,7 +194,7 @@ class Chrome(Browser):
 
         return check_time
 
-    def check_work(self, login_data: LoginData, check_data: Check):
+    def check_work(self, login_data: LoginData, check_data: Check) -> Union[Dict[str, str], None]:
         driver = self._login(login_data.login_id, login_data.login_pass)
         element_detail = self._check(driver, check_data)
         check_work_time = {'checkin_at': None, 'checkout_at': None}

@@ -36,5 +36,10 @@ def check_and_alert():
     return get_worker().check_and_alert()
 
 
+@cli.command()
+def test():
+    return get_worker().test()
+
+
 if __name__ == '__main__':
     cli()

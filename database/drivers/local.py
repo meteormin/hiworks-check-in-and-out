@@ -20,9 +20,9 @@ class LocalSchema(Schema):
 
 class LocalDriver(Driver):
 
-    def __init__(self, base_path: str, data_object: LocalSchema, config: dict):
+    def __init__(self, config: dict, data_object: LocalSchema):
         super().__init__(config, data_object)
-        self.path = os.path.join(base_path, 'local')
+        self.path = os.path.join(config['path'], 'local')
         self.data = data_object
 
     def all(self):

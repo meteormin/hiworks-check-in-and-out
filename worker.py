@@ -75,7 +75,7 @@ class Worker:
     @classmethod
     def __get_local_storage(cls, path: str) -> LocalDriver:
         data = LocalSchema()
-        return LocalDriver(path, data)
+        return LocalDriver({'path': path}, data)
 
     @classmethod
     def __get_mailer(cls, mail_config: dict) -> SimpleMailer:
@@ -238,3 +238,15 @@ class Worker:
                             f"You must checkout, left {seconds_to_hours(work['left'])}")
 
         return 0
+
+    def test(self):
+        hiworks = self.__configs['hiworks']
+
+        check_time = self.__browser.check_work(
+            LoginData(login_id=hiworks['default']['id'], login_pass=hiworks['default']['password']),
+            Check()
+        )
+
+        if check_time is not None:
+            self.__logger.debug(f"checkin_at: {check_time['checkin_at']}")
+            self.__logger.debug(f"checkout_at: {check_time['checkout_at']}")
