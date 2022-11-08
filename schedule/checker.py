@@ -2,7 +2,7 @@ from database.drivers.abstracts import Driver
 from datetime import datetime
 from definitions import WORK_HOURS
 import time
-from typing import Union, Dict
+from typing import Dict, Optional
 
 
 class Checker:
@@ -10,7 +10,7 @@ class Checker:
     def __init__(self, data_store: Driver):
         self.data_store = data_store
 
-    def get_work_hour_today(self) -> Union[Dict[str, float], None]:
+    def get_work_hour_today(self) -> Optional[Dict[str, float]]:
         now = datetime.now()
         data = self.data_store.get(now.strftime('%Y-%m-%d'))
 
