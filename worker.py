@@ -28,6 +28,7 @@ class Worker:
     __browser: Browser
     __mailer: Mailer
     __configs: Dict[str, ConfigParser]
+    __checker: Checker
 
     def __init__(self, constants: Dict[str, str]):
         """
@@ -47,12 +48,14 @@ class Worker:
         self.__data_store = self.__get_local_storage(self.__constants['database'])
         self.__mailer = self.__get_mailer(self.__configs['mailer'])
         self.__browser = self.__get_browser(self.__logger.prefix, self.__configs['hiworks']['default']['url'])
+        self.__checker = Checker(self.__data_store)
 
         self.__logger.debug('start up worker')
 
         if self.__data_store.get(now.strftime('%Y-%m-%d')) is None:
             self.__logger.info('daily pip update...')
-            subprocess.run(f"pip3 install -r {constants['base']}/requirements.txt", shell=True)
+            subprocess.run(f"pip3 install -r {constants['base_path']}/requirements.txt", shell=True)
+            subprocess.run(f"pip3 install git+https://github.com/miniyus/dfquery.git", shell=True)
 
     @classmethod
     def __config(cls, file_path: str) -> ConfigParser:
@@ -231,14 +234,13 @@ class Worker:
             logger.info(f"already checkout: {data.checkout_at}")
             logger.info(f"work hours: {data.work_hour}")
         else:
-            checker = Checker(data_store)
-            work = checker.get_work_hour_today()
-            logger.info(f"work hours: {seconds_to_hours(work['work'])}")
+            work = self.__checker.get_work_hour_today()
+            logger.info(f"work hours: {seconds_to_hours(work.work)}")
 
-            if work['left'] > 0:
-                logger.info(f"left hours: {seconds_to_hours(work['left'])}")
+            if work.left > 0:
+                logger.info(f"left hours: {seconds_to_hours(work.left)}")
             else:
-                logger.info(f"over hours: {seconds_to_hours(work['left'])}")
+                logger.info(f"over hours: {seconds_to_hours(work.left)}")
         return 0
 
     def check_and_alert(self) -> int:
@@ -290,20 +292,20 @@ class Worker:
         else:
             checker = Checker(data_store)
             work = checker.get_work_hour_today()
-            logger.info(f"work hours: {seconds_to_hours(work['work'])}")
-            if work['left'] > 0:
-                logger.info(f"left hours: {seconds_to_hours(work['left'])}")
+            logger.info(f"work hours: {seconds_to_hours(work.work)}")
+            if work.left > 0:
+                logger.info(f"left hours: {seconds_to_hours(work.left)}")
 
                 if data.checkout_at is not None:
                     logger.debug(f"already checkout: {data.checkout_at}")
             else:
-                logger.info(f"over hours: {seconds_to_hours(work['left'])}")
+                logger.info(f"over hours: {seconds_to_hours(work.left)}")
 
-            if work['left'] <= 600:
+            if work.left <= 600:
                 logger.debug(f"you must checkout!!")
 
                 mailer.send(mail_config['outlook']['id'], '[Alert] You must checkout!!',
-                            f"You must checkout, left {seconds_to_hours(work['left'])}")
+                            f"You must checkout, left {seconds_to_hours(work.left)}")
 
         return 0
 

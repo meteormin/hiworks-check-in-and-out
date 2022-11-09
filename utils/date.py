@@ -1,5 +1,6 @@
-from pytimekr import pytimekr
 import datetime
+import calendar
+from pytimekr import pytimekr
 
 
 def is_holidays(date: datetime.date = None):
@@ -31,6 +32,15 @@ def seconds_to_hours(seconds: float) -> str:
 
 def hours_to_seconds(hours: str) -> float:
     [hour, minutes, seconds] = hours.split(':')
-    hs = hour * 3600
-    ms = minutes * 60
-    return seconds + ms + hs
+    hs = int(hour) * 3600
+    ms = int(minutes) * 60
+    return int(seconds) + ms + hs
+
+
+def get_last_day_of_month(month: int, year: int = None):
+    if year is None or year < 0:
+        year = datetime.datetime.now().year
+
+    month_range = calendar.monthrange(year, month)
+
+    return month_range[-1]
