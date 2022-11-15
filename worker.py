@@ -55,7 +55,6 @@ class Worker:
         if self.__data_store.get(now.strftime('%Y-%m-%d')) is None:
             self.__logger.info('daily pip update...')
             subprocess.run(f"pip3 install -r {constants['base_path']}/requirements.txt", shell=True)
-            subprocess.run(f"pip3 install git+https://github.com/miniyus/dfquery.git", shell=True)
 
     @classmethod
     def __config(cls, file_path: str) -> ConfigParser:
@@ -136,6 +135,8 @@ class Worker:
         :return: return 0 is success other value is fail
         :rtype: int
         """
+        self.__logger.info('try checkin...')
+
         if is_holidays(date=date.today()):
             self.__logger.info('today is holiday')
             return 1
@@ -169,7 +170,7 @@ class Worker:
 
     def checkout(self, login_id: str = None, passwd: str = None) -> int:
         """
-        퇴근하기
+        퇴근
         :param login_id:
         :param passwd:
         :type login_id: str | None
@@ -177,6 +178,8 @@ class Worker:
         :return: return 0 is success other value is fail
         :rtype: int
         """
+        self.__logger.info('try checkout...')
+
         if is_holidays(date=date.today()):
             self.__logger.info('today is holiday')
             return 1
@@ -215,6 +218,8 @@ class Worker:
         :return:
         :rtype: int
         """
+        self.__logger.info('check work hour...')
+
         now = datetime.now()
 
         logger = self.__logger
@@ -250,6 +255,8 @@ class Worker:
         :return: 0: success, other value: fail
         :rtype: int
         """
+        self.__logger.info('check and alert')
+
         logger = self.__logger
         conf = self.__configs['hiworks']
         browser = self.__browser
@@ -315,6 +322,8 @@ class Worker:
         :return: void
         :rtype: None
         """
+        self.__logger.info('try test...')
+
         hiworks = self.__configs['hiworks']
 
         check_time = self.__browser.check_work(

@@ -4,3 +4,4 @@ webdriver-manager~=3.8.4
 pytimekr~=0.1.0
 packaging~=21.3
 pandas~=1.5.1
+git+https://github.com/miniyus/dfquery.git
