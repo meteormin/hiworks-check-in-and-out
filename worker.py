@@ -226,13 +226,12 @@ class Worker:
         data_store = self.__data_store
 
         data = data_store.get(now.strftime('%Y-%m-%d'))
-
-        if data.checkin_at is None:
+        if data is None and not isinstance(data, LocalSchema):
             logger.info('not yet checkin')
             return 1
 
-        if not isinstance(data, LocalSchema):
-            logger.error('unknown instance')
+        if data.checkin_at is None:
+            logger.info('not yet checkin')
             return 1
 
         if data.work_hour is not None:
