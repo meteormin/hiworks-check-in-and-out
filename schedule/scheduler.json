@@ -1,6 +1,15 @@
 {
+  "test": {
+    "command": "test",
+    "args": [],
+    "hour": "*",
+    "minute": "*",
+    "second": "10",
+    "day_of_week": "*"
+  },
   "checkin": {
     "command": "checkin",
+    "args": [null, null],
     "hour": "09",
     "minute": "00",
     "second": "00",
@@ -8,6 +17,7 @@
   },
   "checkout": {
     "command": "checkout",
+    "args": [null, null],
     "hour": "20",
     "minute": "00",
     "second": "00",
@@ -15,6 +25,7 @@
   },
   "check-and-alert": {
     "command": "check_and_alert",
+    "args": [],
     "hour": "08-22",
     "minute": "*/10",
     "second": "00",

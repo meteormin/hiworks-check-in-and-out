@@ -1,7 +1,7 @@
 import click
 import os
 import json
-from definitions import PATH
+from definitions import PATH, TIMEZONE
 from worker import Worker
 from schedule import scheduler
 from apscheduler.schedulers.background import BlockingScheduler
@@ -88,13 +88,13 @@ def schedule():
     for k, v in json_dict.items():
         parse_dict[k] = {}
         if v['command']:
-            parse_dict['func'] = getattr(worker, v['command'])
+            parse_dict[k]['func'] = getattr(worker, v['command'])
 
             del v['command']
 
-            parse_dict.update(v)
+            parse_dict[k].update(v)
 
-    scheduler.register(BlockingScheduler(), parse_dict)
+    scheduler.register(BlockingScheduler(timezone=TIMEZONE), parse_dict)
 
 
 if __name__ == '__main__':

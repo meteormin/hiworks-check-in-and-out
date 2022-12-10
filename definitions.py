@@ -13,3 +13,4 @@ PATH = {
 }
 
 WORK_HOURS = 9
+TIMEZONE = 'Asia/Seoul'
