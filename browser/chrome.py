@@ -18,14 +18,19 @@ from browser.hiworks.elements import LoginElement
 class Chrome(Browser):
 
     def __init__(self, logger: LoggerAdapter, driver: WebDriver, url: str):
-        current_path = os.path.dirname(os.path.abspath(__file__))
         self.driver = driver
         self.logger = logger
         self.url = url
+        self.is_login = False
 
     def _login(self, _id: str, passwd: str) -> WebDriver:
         login_data = LoginElement()
+
         self.driver.get(self.url)
+
+        if self.is_login and self.driver.current_url.split('/')[-1] == 'main':
+            return self.driver
+
         element_id = self.driver.find_element(By.CSS_SELECTOR, login_data.input_id)
         element_pass = self.driver.find_element(By.CSS_SELECTOR, login_data.input_pass)
         element_login_btn = self.driver.find_element(By.CSS_SELECTOR, login_data.login_btn)
@@ -65,6 +70,8 @@ class Chrome(Browser):
             self.logger.error("timeout 5s")
 
         self.logger.info('success: login')
+
+        self.is_login = True
 
         return self.driver
 
@@ -220,4 +227,5 @@ class Chrome(Browser):
                 self.logger.error(e)
 
             return check_work_time
+
         return None

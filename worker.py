@@ -1,7 +1,6 @@
 import os
 import time
 import subprocess
-from typing import Dict
 from datetime import datetime, date
 from configparser import ConfigParser
 from selenium import webdriver
@@ -22,15 +21,15 @@ from mailer.mailer import SimpleMailer
 
 
 class Worker:
-    __constants: Dict[str, str]
+    __constants: dict[str, str]
     __logger: LoggerAdapter
     __data_store: Driver
     __browser: Browser
     __mailer: Mailer
-    __configs: Dict[str, ConfigParser]
+    __configs: dict[str, ConfigParser]
     __checker: Checker
 
-    def __init__(self, constants: Dict[str, str]):
+    def __init__(self, constants: dict[str, str]):
         """
         Worker Constructor
         :param constants: 상수 값
@@ -282,20 +281,22 @@ class Worker:
         data = LocalSchema()
         data = data_store.get(data, now.strftime('%Y-%m-%d'))
 
+        is_checkin = True
         if data is None and not isinstance(data, LocalSchema):
             logger.error('you are not checkin')
-            return 1
+            is_checkin = False
 
+        elif data.checkin_at is None:
+            logger.debug('not yet checkin')
+            is_checkin = False
+
+        hiworks = self.__configs['hiworks']
         mail_config = self.__configs['mailer']
         mailer = self.__mailer
 
-        if data.checkin_at is None:
-            logger.debug('not yet checkin')
-            hiworks = self.__configs['hiworks']
-
+        if not is_checkin:
             mailer.send(mail_config['outlook']['id'], f"[Alert] You Don't Checkin...",
                         f"go: {hiworks['default']['url']}")
-            return 1
 
         if data.work_hour is not None:
             logger.debug(f"already checkout: {data.checkout_at}")

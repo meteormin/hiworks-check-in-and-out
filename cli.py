@@ -1,6 +1,7 @@
 import click
 from definitions import PATH
 from worker import Worker
+from apscheduler.schedulers.background import BlockingScheduler
 
 
 def get_worker():
@@ -72,6 +73,53 @@ def check_and_alert():
 @cli.command()
 def test():
     return get_worker().test()
+
+
+@cli.command()
+def schedule():
+    scheduler = BlockingScheduler()
+
+    scheduler.add_job(
+        get_worker().test,
+        'cron',
+        id='scheduler',
+        second='00',
+        minute='*',
+        hour='*',
+        day_of_week='*'
+    )
+
+    scheduler.add_job(
+        get_worker().checkin,
+        'cron',
+        id='scheduler.checkin',
+        second='00',
+        minute='00',
+        hour='09',
+        day_of_week='1-5'
+    )
+
+    scheduler.add_job(
+        get_worker().checkout,
+        'cron',
+        id='scheduler.checkout',
+        second='00',
+        minute='00',
+        hour='20',
+        day_of_week='1-5'
+    )
+
+    scheduler.add_job(
+        get_worker().check_and_alert,
+        'cron',
+        id='scheduler.checkout',
+        second='00',
+        minute='*/10',
+        hour='08-22',
+        day_of_week='1-5'
+    )
+
+    scheduler.start()
 
 
 if __name__ == '__main__':
