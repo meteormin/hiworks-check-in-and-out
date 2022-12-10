@@ -100,6 +100,7 @@ sh ./hiworks-checker.sh {checkin or checkout}
 ```
 
 **schedule command**
+> schedule 커맨드를 통해 크론 없이 스케줄링이 가능합니다.
 
 ```shell
 
