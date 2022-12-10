@@ -7,11 +7,13 @@ from dataclasses import dataclass
 import time
 
 
-@dataclass(frozen=True)
+@dataclass()
 class WorkTime:
     checkin_at: float
     work: float
     left: float
+    acc: float
+    avg: float
 
 
 class Checker:
@@ -32,12 +34,13 @@ class Checker:
         if data.work_hour is not None:
             work_time = data.work_hour.replace('+', '')
             work_time = work_time.replace('-', '')
-            in_time = time.strptime(data.checkin_at, '%H:%M:%S')
 
             return WorkTime(
-                checkin_at=float(time.mktime(in_time)),
+                checkin_at=float(hours_to_seconds(data.checkin_at)),
                 work=float(hours_to_seconds(work_time)),
-                left=0.0
+                left=0.0,
+                acc=0.0,
+                avg=0.0
             )
         else:
             now = datetime.now()
@@ -48,7 +51,9 @@ class Checker:
             return WorkTime(
                 checkin_at=float(time.mktime(in_time)),
                 work=float(work_seconds),
-                left=float(WORK_HOURS * 3600) - work_seconds
+                left=float(WORK_HOURS * 3600) - work_seconds,
+                acc=0.0,
+                avg=0.0
             )
 
     def get_work_hour_today(self) -> WorkTime | None:
@@ -64,6 +69,7 @@ class Checker:
         today_time = time.mktime(time.strptime(today.strftime('%Y-%m-%d'), '%Y-%m-%d'))
 
         work_hours = []
+        acc = 0
         for day in range(1, get_last_day_of_month(month, year)):
             date_id = f"{year}-{str(month).zfill(2)}-{str(day).zfill(2)}"
             date_id_time = time.mktime(time.strptime(date_id, '%Y-%m-%d'))
@@ -71,6 +77,14 @@ class Checker:
             if (today_time - date_id_time) < 0:
                 break
 
-            work_hours.append(self.get_work_hour(date_id))
+            work_time = self.get_work_hour(date_id)
+
+            if work_time is not None:
+                acc += work_time.work
+                avg = acc / (len(work_hours) + 1)
+                work_time.acc = acc
+                work_time.avg = avg
+
+                work_hours.append(work_time)
 
         return work_hours

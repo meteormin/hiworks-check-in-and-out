@@ -27,11 +27,13 @@ class LocalDriver(Driver):
         dir_list = os.listdir(self.path)
         data_list = []
         for filename in dir_list:
-            with open(os.path.join(self.path, filename), encoding='utf-8') as f:
-                json_dict = json.load(f)
+            ext = os.path.splitext(filename)[1]
+            if ext == '.json':
+                with open(os.path.join(self.path, filename), encoding='utf-8') as f:
+                    json_dict = json.load(f)
 
-            copy_data = copy.deepcopy(data)
-            data_list.append(copy_data.map(json_dict))
+                copy_data = copy.deepcopy(data)
+                data_list.append(copy_data.map(json_dict))
 
         return data_list
 
