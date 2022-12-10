@@ -1,7 +1,5 @@
-import os
 from datetime import datetime
 from time import sleep
-from typing import Dict, Optional
 from selenium.webdriver.remote.webdriver import WebDriver
 from selenium.common import TimeoutException, NoSuchElementException
 from selenium.webdriver.common.by import By
@@ -75,7 +73,7 @@ class Chrome(Browser):
 
         return self.driver
 
-    def _open_div(self, driver: WebDriver, check_data: Check) -> Optional[WebElement]:
+    def _open_div(self, driver: WebDriver, check_data: Check) -> WebElement | None:
         element = None
 
         try:
@@ -110,7 +108,7 @@ class Chrome(Browser):
 
         return element
 
-    def _check(self, driver: WebDriver, check_data: Check) -> Optional[WebElement]:
+    def _check(self, driver: WebDriver, check_data: Check) -> WebElement | None:
         driver.implicitly_wait(2)
         sleep(0.3)
 
@@ -143,7 +141,7 @@ class Chrome(Browser):
             self.logger.error(e)
             return False
 
-    def checkin(self, login_data: LoginData, checkin_data: Checkin) -> Optional[str]:
+    def checkin(self, login_data: LoginData, checkin_data: Checkin) -> str | None:
         driver = self._login(login_data.login_id, login_data.login_pass)
         element_detail = self._check(driver, checkin_data)
         check_time = None
@@ -167,7 +165,7 @@ class Chrome(Browser):
 
         return check_time
 
-    def checkout(self, login_data: LoginData, checkout_data: Checkout) -> Optional[str]:
+    def checkout(self, login_data: LoginData, checkout_data: Checkout) -> str | None:
         driver = self._login(login_data.login_id, login_data.login_pass)
         element_detail = self._check(driver, checkout_data)
         check_time = None
@@ -191,7 +189,7 @@ class Chrome(Browser):
 
         return check_time
 
-    def check_work(self, login_data: LoginData, check_data: Check) -> Optional[Dict[str, Optional[str]]]:
+    def check_work(self, login_data: LoginData, check_data: Check) -> dict[str, str | None] | None:
         driver = self._login(login_data.login_id, login_data.login_pass)
         element_detail = self._check(driver, check_data)
         check_work_time = {'checkin_at': None, 'checkout_at': None}
