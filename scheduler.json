@@ -1,0 +1,23 @@
+{
+  "checkin": {
+    "command": "checkin",
+    "hour": "09",
+    "minute": "00",
+    "second": "00",
+    "day_of_week": "1-5"
+  },
+  "checkout": {
+    "command": "checkout",
+    "hour": "20",
+    "minute": "00",
+    "second": "00",
+    "day_of_week": "1-5"
+  },
+  "check-and-alert": {
+    "command": "check_and_alert",
+    "hour": "08-22",
+    "minute": "*/10",
+    "second": "00",
+    "day_of_week": "1-5"
+  }
+}

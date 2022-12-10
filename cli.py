@@ -1,6 +1,9 @@
 import click
+import os
+import json
 from definitions import PATH
 from worker import Worker
+from schedule import scheduler
 from apscheduler.schedulers.background import BlockingScheduler
 
 
@@ -77,49 +80,21 @@ def test():
 
 @cli.command()
 def schedule():
-    scheduler = BlockingScheduler()
+    with open(os.path.join(PATH["base_path"], 'scheduler.json')) as f:
+        json_dict = json.load(f)
 
-    scheduler.add_job(
-        get_worker().test,
-        'cron',
-        id='scheduler',
-        second='00',
-        minute='*',
-        hour='*',
-        day_of_week='*'
-    )
+    parse_dict = {}
+    worker = get_worker()
+    for k, v in json_dict.items():
+        parse_dict[k] = {}
+        if v['command']:
+            parse_dict['func'] = getattr(worker, v['command'])
 
-    scheduler.add_job(
-        get_worker().checkin,
-        'cron',
-        id='scheduler.checkin',
-        second='00',
-        minute='00',
-        hour='09',
-        day_of_week='1-5'
-    )
+            del v['command']
 
-    scheduler.add_job(
-        get_worker().checkout,
-        'cron',
-        id='scheduler.checkout',
-        second='00',
-        minute='00',
-        hour='20',
-        day_of_week='1-5'
-    )
+            parse_dict.update(v)
 
-    scheduler.add_job(
-        get_worker().check_and_alert,
-        'cron',
-        id='scheduler.checkout',
-        second='00',
-        minute='*/10',
-        hour='08-22',
-        day_of_week='1-5'
-    )
-
-    scheduler.start()
+    scheduler.register(BlockingScheduler(), parse_dict)
 
 
 if __name__ == '__main__':
