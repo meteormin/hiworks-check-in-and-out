@@ -1,8 +1,8 @@
 from datetime import datetime
-from database.drivers.abstracts import Driver
-from database.drivers.local import LocalSchema
-from utils.date import get_last_day_of_month, hours_to_seconds
-from definitions import WORK_HOURS
+from hciao.database.drivers.abstracts import Driver
+from hciao.database.drivers.local import LocalSchema
+from hciao.utils.date import get_last_day_of_month, hours_to_seconds
+from hciao.definitions import WORK_HOURS
 from dataclasses import dataclass
 import time
 

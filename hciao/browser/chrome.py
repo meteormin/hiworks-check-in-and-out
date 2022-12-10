@@ -6,11 +6,11 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.remote.webelement import WebElement
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as ec
-from browser.abstracts import Browser
-from logger.logger_adapter import LoggerAdapter
-from browser.login_data import LoginData
-from browser.hiworks.elements import Check, Checkin, Checkout
-from browser.hiworks.elements import LoginElement
+from hciao.browser.abstracts import Browser
+from hciao.logger.logger_adapter import LoggerAdapter
+from hciao.browser.login_data import LoginData
+from hciao.browser.hiworks.elements import Check, Checkin, Checkout
+from hciao.browser.hiworks.elements import LoginElement
 
 
 class Chrome(Browser):

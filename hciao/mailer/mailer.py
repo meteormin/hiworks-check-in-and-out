@@ -1,6 +1,6 @@
 import smtplib
 from email.mime.text import MIMEText
-from mailer.abstracts import Mailer
+from hciao.mailer.abstracts import Mailer
 
 
 class SimpleMailer(Mailer):

@@ -6,18 +6,18 @@ from configparser import ConfigParser
 from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
 from webdriver_manager.chrome import ChromeDriverManager
-from browser.chrome import Chrome
-from browser.abstracts import Browser
-from logger.log import Log
-from browser.hiworks.elements import Checkin, Checkout, Check
-from browser.login_data import LoginData
-from logger.logger_adapter import LoggerAdapter
-from mailer.abstracts import Mailer
-from schedule.checker import Checker
-from utils.date import is_holidays, seconds_to_hours
-from database.drivers.local import LocalSchema, LocalDriver
-from database.drivers.abstracts import Driver
-from mailer.mailer import SimpleMailer
+from hciao.browser.chrome import Chrome
+from hciao.browser.abstracts import Browser
+from hciao.logger.log import Log
+from hciao.browser.hiworks.elements import Checkin, Checkout, Check
+from hciao.browser.login_data import LoginData
+from hciao.logger.logger_adapter import LoggerAdapter
+from hciao.mailer.abstracts import Mailer
+from hciao.schedule.checker import Checker
+from hciao.utils import date as util_dt
+from hciao.database.drivers.local import LocalSchema, LocalDriver
+from hciao.database.drivers.abstracts import Driver
+from hciao.mailer.mailer import SimpleMailer
 
 
 class Worker:
@@ -39,8 +39,8 @@ class Worker:
 
         self.__constants = constants
         self.__configs = {
-            'hiworks': self.__config('hiworks.ini'),
-            'mailer': self.__config('mailer.ini')
+            'hiworks': self.__config('../hiworks.ini'),
+            'mailer': self.__config('../mailer.ini')
         }
         self.__logger = self.__get_logger('worker')
 
@@ -54,7 +54,7 @@ class Worker:
         data = LocalSchema()
         if self.__data_store.get(data, now.strftime('%Y-%m-%d')) is None:
             self.__logger.info('daily pip update...')
-            subprocess.run(f"pip3 install -r {constants['base_path']}/requirements.txt", shell=True)
+            subprocess.run(f"pip3 install -r {constants['base_path']}/../requirements.txt", shell=True)
 
     @classmethod
     def __config(cls, file_path: str) -> ConfigParser:
@@ -137,7 +137,7 @@ class Worker:
         """
         self.__logger.info('try checkin...')
 
-        if is_holidays(date=date.today()):
+        if util_dt.is_holidays(date=date.today()):
             self.__logger.info('today is holiday')
             return 1
 
@@ -180,7 +180,7 @@ class Worker:
         """
         self.__logger.info('try checkout...')
 
-        if is_holidays(date=date.today()):
+        if util_dt.is_holidays(date=date.today()):
             self.__logger.info('today is holiday')
             return 1
 
@@ -207,7 +207,7 @@ class Worker:
             out_time = time.strptime(data.checkout_at, '%H:%M:%S')
             in_time = time.strptime(data.checkin_at, '%H:%M:%S')
 
-            data.work_hour = seconds_to_hours(time.mktime(out_time) - time.mktime(in_time))
+            data.work_hour = util_dt.seconds_to_hours(time.mktime(out_time) - time.mktime(in_time))
             data_store.save(now.strftime('%Y-%m-%d'), data)
 
         return 0
@@ -241,12 +241,12 @@ class Worker:
             logger.info(f"work hours: {data.work_hour}")
         else:
             work = self.__checker.get_work_hour_today()
-            logger.info(f"work hours: {seconds_to_hours(work.work)}")
+            logger.info(f"work hours: {util_dt.seconds_to_hours(work.work)}")
 
             if work.left > 0:
-                logger.info(f"left hours: {seconds_to_hours(work.left)}")
+                logger.info(f"left hours: {util_dt.seconds_to_hours(work.left)}")
             else:
-                logger.info(f"over hours: {seconds_to_hours(work.left)}")
+                logger.info(f"over hours: {util_dt.seconds_to_hours(work.left)}")
         return 0
 
     def check_and_alert(self) -> int:
@@ -304,20 +304,20 @@ class Worker:
         else:
             checker = Checker(data_store)
             work = checker.get_work_hour_today()
-            logger.info(f"work hours: {seconds_to_hours(work.work)}")
+            logger.info(f"work hours: {util_dt.seconds_to_hours(work.work)}")
             if work.left > 0:
-                logger.info(f"left hours: {seconds_to_hours(work.left)}")
+                logger.info(f"left hours: {util_dt.seconds_to_hours(work.left)}")
 
                 if data.checkout_at is not None:
                     logger.debug(f"already checkout: {data.checkout_at}")
             else:
-                logger.info(f"over hours: {seconds_to_hours(work.left)}")
+                logger.info(f"over hours: {util_dt.seconds_to_hours(work.left)}")
 
             if work.left <= 600:
                 logger.debug(f"you must checkout!!")
 
                 mailer.send(mail_config['outlook']['id'], '[Alert] You must checkout!!',
-                            f"You must checkout, left {seconds_to_hours(work.left)}")
+                            f"You must checkout, left {util_dt.seconds_to_hours(work.left)}")
 
         return 0
 

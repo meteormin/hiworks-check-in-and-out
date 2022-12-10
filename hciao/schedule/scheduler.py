@@ -1,6 +1,6 @@
 from apscheduler.schedulers.base import BaseScheduler
 
-from logger.log import Log
+from hciao.logger.log import Log
 
 
 def register(s: BaseScheduler, config: dict):

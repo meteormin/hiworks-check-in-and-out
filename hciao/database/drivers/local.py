@@ -1,8 +1,8 @@
 import copy
 import json
 import os
-from database.drivers.abstracts import Driver, Schema
-from utils import object
+from hciao.database.drivers.abstracts import Driver, Schema
+from hciao.utils import object
 from dataclasses import dataclass
 
 

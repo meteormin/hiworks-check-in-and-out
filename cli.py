@@ -1,9 +1,9 @@
 import click
 import os
 import json
-from definitions import PATH, TIMEZONE
-from worker import Worker
-from schedule import scheduler
+from hciao.definitions import PATH, TIMEZONE
+from hciao.worker import Worker
+from hciao.schedule import scheduler
 from apscheduler.schedulers.background import BlockingScheduler
 
 
@@ -80,7 +80,7 @@ def test():
 
 @cli.command()
 def schedule():
-    with open(os.path.join(PATH["schedule"], 'scheduler.json')) as f:
+    with open(os.path.join(PATH["config"], 'scheduler.json')) as f:
         json_dict = json.load(f)
 
     parse_dict = {}

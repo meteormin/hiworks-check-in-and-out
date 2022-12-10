@@ -3,8 +3,8 @@ about browser abstracts
 """
 from abc import ABC, abstractmethod
 from typing import Optional, Dict
-from browser.hiworks.elements import Check
-from browser.login_data import LoginData
+from hciao.browser.hiworks.elements import Check
+from hciao.browser.login_data import LoginData
 
 
 class Browser(ABC):
