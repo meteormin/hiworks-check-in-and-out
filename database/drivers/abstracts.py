@@ -5,6 +5,7 @@ T = TypeVar('T')
 
 
 class Schema(ABC):
+    data_id: str | int
 
     @abstractmethod
     def map(self, data: dict):
@@ -12,19 +13,17 @@ class Schema(ABC):
 
 
 class Driver(ABC, Generic[T]):
-    data: Schema
     config: dict
 
-    def __init__(self, config: dict, data_object: T):
+    def __init__(self, config: dict):
         self.config = config
-        self.data = data_object
 
     @abstractmethod
-    def get(self, data_id) -> T:
+    def get(self, data: T, data_id: str | int = None) -> T:
         pass
 
     @abstractmethod
-    def all(self) -> list:
+    def all(self, data: T) -> list[T]:
         pass
 
     @abstractmethod

@@ -52,7 +52,8 @@ class Worker:
 
         self.__logger.debug('start up worker')
 
-        if self.__data_store.get(now.strftime('%Y-%m-%d')) is None:
+        data = LocalSchema()
+        if self.__data_store.get(data, now.strftime('%Y-%m-%d')) is None:
             self.__logger.info('daily pip update...')
             subprocess.run(f"pip3 install -r {constants['base_path']}/requirements.txt", shell=True)
 
@@ -108,8 +109,8 @@ class Worker:
         :return: local storage driver
         :rtype: Driver
         """
-        data = LocalSchema()
-        return LocalDriver({'path': path}, data)
+
+        return LocalDriver({'path': path})
 
     @classmethod
     def __get_mailer(cls, mail_config: dict) -> Mailer:
@@ -195,7 +196,8 @@ class Worker:
         check_time = browser.checkout(LoginData(login_id=login_id, login_pass=passwd), Checkout())
 
         now = datetime.now()
-        data = data_store.get(now.strftime('%Y-%m-%d'))
+        data = LocalSchema()
+        data = data_store.get(data, now.strftime('%Y-%m-%d'))
 
         if data is not None and isinstance(data, LocalSchema):
             if check_time is None and check_time == '00:00:00':
@@ -225,7 +227,8 @@ class Worker:
         logger = self.__logger
         data_store = self.__data_store
 
-        data = data_store.get(now.strftime('%Y-%m-%d'))
+        data = LocalSchema()
+        data = data_store.get(data, now.strftime('%Y-%m-%d'))
         if data is None and not isinstance(data, LocalSchema):
             logger.info('not yet checkin')
             return 1
@@ -269,13 +272,15 @@ class Worker:
         check_time = browser.check_work(LoginData(login_id, passwd), Check())
 
         if check_time is not None:
-            data = data_store.get(now.strftime('%Y-%m-%d'))
+            data = LocalSchema()
+            data = data_store.get(data, now.strftime('%Y-%m-%d'))
             if isinstance(data, LocalSchema):
                 data.checkin_at = check_time['checkin_at']
                 data.checkout_at = check_time['checkout_at']
                 data_store.save(now.strftime('%Y-%m-%d'), data)
 
-        data = data_store.get(now.strftime('%Y-%m-%d'))
+        data = LocalSchema()
+        data = data_store.get(data, now.strftime('%Y-%m-%d'))
 
         if data is None and not isinstance(data, LocalSchema):
             logger.error('you are not checkin')

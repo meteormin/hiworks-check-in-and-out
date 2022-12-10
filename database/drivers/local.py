@@ -1,7 +1,6 @@
+import copy
 import json
 import os
-from typing import Union, Dict
-
 from database.drivers.abstracts import Driver, Schema
 from utils import object
 from dataclasses import dataclass
@@ -9,10 +8,10 @@ from dataclasses import dataclass
 
 @dataclass()
 class LocalSchema(Schema):
-    login_id: Union[str, None] = None
-    checkin_at: Union[str, None] = None
-    checkout_at: Union[str, None] = None
-    work_hour: Union[str, None] = None
+    login_id: str | None = None
+    checkin_at: str | None = None
+    checkout_at: str | None = None
+    work_hour: str | None = None
 
     def map(self, data: dict):
         return object.map_from_dict(self, data)
@@ -20,26 +19,30 @@ class LocalSchema(Schema):
 
 class LocalDriver(Driver):
 
-    def __init__(self, config: dict, data_object: LocalSchema):
-        super().__init__(config, data_object)
+    def __init__(self, config: dict):
+        super().__init__(config)
         self.path = os.path.join(config['path'], 'local')
-        self.data = data_object
 
-    def all(self):
+    def all(self, data: LocalSchema) -> list[LocalSchema]:
         dir_list = os.listdir(self.path)
-        data_dict = {}
+        data_list = []
         for filename in dir_list:
             with open(os.path.join(self.path, filename), encoding='utf-8') as f:
                 json_dict = json.load(f)
-            data_dict[filename] = self.data.map(json_dict)
-        return data_dict
 
-    def get(self, date: str) -> Union[LocalSchema, None]:
+            copy_data = copy.deepcopy(data)
+            data_list.append(copy_data.map(json_dict))
+
+        return data_list
+
+    def get(self, data: LocalSchema, date: str = None) -> LocalSchema | None:
         filename = 'local_' + date + '.json'
         try:
             with open(os.path.join(self.path, filename), encoding='utf-8') as f:
                 json_dict = json.load(f)
-            return self.data.map(json_dict)
+            data = data.map(json_dict)
+            data.data_id = date
+            return data
         except IOError:
             return None
 

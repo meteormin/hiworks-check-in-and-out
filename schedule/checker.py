@@ -1,6 +1,7 @@
 from datetime import datetime
 from typing import Dict, Optional
 from database.drivers.abstracts import Driver
+from database.drivers.local import LocalSchema
 from utils.date import get_last_day_of_month, hours_to_seconds
 from definitions import WORK_HOURS
 from dataclasses import dataclass
@@ -9,6 +10,7 @@ import time
 
 @dataclass(frozen=True)
 class WorkTime:
+    checkin_at: float
     work: float
     left: float
 
@@ -19,7 +21,8 @@ class Checker:
         self.data_store = data_store
 
     def get_work_hour(self, date_id: str) -> Optional[WorkTime]:
-        data = self.data_store.get(date_id)
+        data = LocalSchema()
+        data = self.data_store.get(data, date_id)
 
         if data is None:
             return None
@@ -30,8 +33,10 @@ class Checker:
         if data.work_hour is not None:
             work_time = data.work_hour.replace('+', '')
             work_time = work_time.replace('-', '')
+            in_time = time.strptime(data.checkin_at, '%H:%M:%S')
 
             return WorkTime(
+                checkin_at=float(time.mktime(in_time)),
                 work=float(hours_to_seconds(work_time)),
                 left=0.0
             )
@@ -42,6 +47,7 @@ class Checker:
             work_seconds = time.mktime(now_time) - time.mktime(in_time)
 
             return WorkTime(
+                checkin_at=float(time.mktime(in_time)),
                 work=float(work_seconds),
                 left=float(WORK_HOURS * 3600) - work_seconds
             )
