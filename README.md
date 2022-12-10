@@ -109,6 +109,7 @@ sh ./hiworks-checker.sh schedule
 ```
 
 schedule configuration
+> [scheduler.json](./hciao/config/scheduler.json)
 
 ```json
 {
