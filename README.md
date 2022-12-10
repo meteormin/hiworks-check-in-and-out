@@ -1,4 +1,4 @@
-# automatic aiworks checkin and out
+# automatic hiworks checkin and out
 
 ## Install
 
