@@ -80,7 +80,7 @@ def test():
 
 @cli.command()
 def schedule():
-    with open(os.path.join(PATH["base_path"], 'scheduler.json')) as f:
+    with open(os.path.join(PATH["schedule"], 'scheduler.json')) as f:
         json_dict = json.load(f)
 
     parse_dict = {}
