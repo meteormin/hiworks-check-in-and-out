@@ -1,5 +1,4 @@
 from datetime import datetime
-from typing import Dict, Optional
 from database.drivers.abstracts import Driver
 from database.drivers.local import LocalSchema
 from utils.date import get_last_day_of_month, hours_to_seconds
@@ -20,7 +19,7 @@ class Checker:
     def __init__(self, data_store: Driver):
         self.data_store = data_store
 
-    def get_work_hour(self, date_id: str) -> Optional[WorkTime]:
+    def get_work_hour(self, date_id: str) -> WorkTime | None:
         data = LocalSchema()
         data = self.data_store.get(data, date_id)
 
@@ -52,11 +51,11 @@ class Checker:
                 left=float(WORK_HOURS * 3600) - work_seconds
             )
 
-    def get_work_hour_today(self) -> Optional[WorkTime]:
+    def get_work_hour_today(self) -> WorkTime | None:
         now = datetime.now()
         return self.get_work_hour(now.strftime('%Y-%m-%d'))
 
-    def get_work_hours_month(self, month: int = None, year: int = None) -> Dict[str, Optional[WorkTime]]:
+    def get_work_hours_month(self, month: int = None, year: int = None) -> list[WorkTime | None]:
         today = datetime.today()
         if year is None or year < 0:
             year = today.year
@@ -64,7 +63,7 @@ class Checker:
             month = today.month
         today_time = time.mktime(time.strptime(today.strftime('%Y-%m-%d'), '%Y-%m-%d'))
 
-        work_hours = {}
+        work_hours = []
         for day in range(1, get_last_day_of_month(month, year)):
             date_id = f"{year}-{str(month).zfill(2)}-{str(day).zfill(2)}"
             date_id_time = time.mktime(time.strptime(date_id, '%Y-%m-%d'))
@@ -72,8 +71,6 @@ class Checker:
             if (today_time - date_id_time) < 0:
                 break
 
-            work_hours.update({
-                date_id: self.get_work_hour(date_id)
-            })
+            work_hours.append(self.get_work_hour(date_id))
 
         return work_hours

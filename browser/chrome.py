@@ -104,15 +104,6 @@ class Chrome(Browser):
         return element
 
     def _check(self, driver: WebDriver, check_data: Check) -> Optional[WebElement]:
-        if isinstance(check_data, Checkin):
-            index = 0
-        elif isinstance(check_data, Checkout):
-            index = 1
-        elif isinstance(check_data, Check):
-            index = None
-        else:
-            return None
-
         driver.implicitly_wait(2)
         sleep(0.3)
 
