@@ -7,5 +7,7 @@ hiworks.ini
 mailer.ini
 .DS_Store
 __pycache__
+!logs/
 logs/*
+!data/
 data/*
