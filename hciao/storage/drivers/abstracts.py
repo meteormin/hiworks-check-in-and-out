@@ -1,11 +1,13 @@
 from abc import ABC, abstractmethod
 from typing import TypeVar, Generic
+from dataclasses import dataclass
 
 T = TypeVar('T')
 
 
+@dataclass()
 class Schema(ABC):
-    data_id: str | int
+    data_id: str | int = None
 
     @abstractmethod
     def map(self, data: dict):

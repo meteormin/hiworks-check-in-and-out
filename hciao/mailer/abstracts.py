@@ -8,5 +8,9 @@ class Mailer(ABC):
         pass
 
     @abstractmethod
+    def attachment(self, file_path: list):
+        pass
+
+    @abstractmethod
     def send(self, to: str, subject: str, msg: str) -> bool:
         pass

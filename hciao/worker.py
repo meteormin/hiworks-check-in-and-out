@@ -1,6 +1,7 @@
 import os
 import time
 import subprocess
+from enum import Enum
 from datetime import datetime, date
 from configparser import ConfigParser
 from selenium import webdriver
@@ -15,15 +16,27 @@ from hciao.logger.logger_adapter import LoggerAdapter
 from hciao.mailer.abstracts import Mailer
 from hciao.schedule.checker import Checker
 from hciao.utils import date as util_dt
-from hciao.database.drivers.local import LocalSchema, LocalDriver
-from hciao.database.drivers.abstracts import Driver
+from hciao.storage.drivers.local import (
+    LocalSchema,
+    LocalJsonDriver,
+    LocalCsvDriver,
+)
+from hciao.storage.drivers.abstracts import Driver
 from hciao.mailer.mailer import SimpleMailer
+
+
+class DataStoreEnum(str, Enum):
+    JSON = 'json'
+    CSV = 'csv'
+
+    def __str__(self):
+        return self.value
 
 
 class Worker:
     __constants: dict[str, str]
     __logger: LoggerAdapter
-    __data_store: Driver
+    __data_stores: dict[DataStoreEnum, Driver]
     __browser: Browser
     __mailer: Mailer
     __configs: dict[str, ConfigParser]
@@ -44,15 +57,17 @@ class Worker:
         }
         self.__logger = self.__get_logger('worker')
 
-        self.__data_store = self.__get_local_storage(self.__constants['database'])
+        self.__data_stores[DataStoreEnum.JSON] = self.__get_local_storage(self.__constants['storage'])
+        self.__data_stores[DataStoreEnum.CSV] = self.__get_local_csv_storage(self.__constants['storage'])
+
         self.__mailer = self.__get_mailer(self.__configs['mailer'])
         self.__browser = self.__get_browser(self.__logger.prefix, self.__configs['hiworks']['default']['url'])
-        self.__checker = Checker(self.__data_store)
+        self.__checker = Checker(self.__data_stores[DataStoreEnum.JSON])
 
         self.__logger.debug('start up worker')
 
         data = LocalSchema()
-        if self.__data_store.get(data, now.strftime('%Y-%m-%d')) is None:
+        if self.__data_stores[DataStoreEnum.JSON].get(data, now.strftime('%Y-%m-%d')) is None:
             self.__logger.info('daily pip update...')
             subprocess.run(f"pip3 install -r {constants['base_path']}/../requirements.txt", shell=True)
 
@@ -109,7 +124,7 @@ class Worker:
         :rtype: Driver
         """
 
-        return LocalDriver({'path': path})
+        return LocalJsonDriver({'path': path})
 
     @classmethod
     def __get_mailer(cls, mail_config: dict) -> Mailer:
@@ -124,6 +139,10 @@ class Worker:
             login_id=mail_config['outlook']['id'],
             login_pass=mail_config['outlook']['password']
         )
+
+    @classmethod
+    def __get_local_csv_storage(cls, path: str):
+        return LocalCsvDriver({'path': path})
 
     def checkin(self, login_id: str, passwd: str) -> int:
         """
@@ -142,7 +161,7 @@ class Worker:
             return 1
 
         browser = self.__browser
-        data_store = self.__data_store
+        data_store = self.__data_stores[DataStoreEnum.JSON]
         conf = self.__configs['hiworks']
 
         if login_id is None or passwd is None:
@@ -186,7 +205,7 @@ class Worker:
 
         conf = self.__configs['hiworks']
         browser = self.__browser
-        data_store = self.__data_store
+        data_store = self.__data_stores[DataStoreEnum.JSON]
 
         if login_id is None or passwd is None:
             login_id = conf['default']['id']
@@ -224,7 +243,7 @@ class Worker:
         now = datetime.now()
 
         logger = self.__logger
-        data_store = self.__data_store
+        data_store = self.__data_stores[DataStoreEnum.JSON]
 
         data = LocalSchema()
         data = data_store.get(data, now.strftime('%Y-%m-%d'))
@@ -241,12 +260,12 @@ class Worker:
             logger.info(f"work hours: {data.work_hour}")
         else:
             work = self.__checker.get_work_hour_today()
-            logger.info(f"work hours: {util_dt.seconds_to_hours(work.work)}")
+            logger.info(f"work hours: {work.work}")
 
-            if work.left > 0:
-                logger.info(f"left hours: {util_dt.seconds_to_hours(work.left)}")
+            if util_dt.hours_to_seconds(work.left) > 0:
+                logger.info(f"left hours: {work.left}")
             else:
-                logger.info(f"over hours: {util_dt.seconds_to_hours(work.left)}")
+                logger.info(f"over hours: {work.left}")
         return 0
 
     def check_and_alert(self) -> int:
@@ -261,7 +280,7 @@ class Worker:
         logger = self.__logger
         conf = self.__configs['hiworks']
         browser = self.__browser
-        data_store = self.__data_store
+        data_store = self.__data_stores[DataStoreEnum.JSON]
 
         now = datetime.now()
 
@@ -304,20 +323,72 @@ class Worker:
         else:
             checker = Checker(data_store)
             work = checker.get_work_hour_today()
-            logger.info(f"work hours: {util_dt.seconds_to_hours(work.work)}")
-            if work.left > 0:
-                logger.info(f"left hours: {util_dt.seconds_to_hours(work.left)}")
+            logger.info(f"work hours: {work.work}")
+            if util_dt.hours_to_seconds(work.left) > 0:
+                logger.info(f"left hours: {work.left}")
 
                 if data.checkout_at is not None:
                     logger.debug(f"already checkout: {data.checkout_at}")
             else:
-                logger.info(f"over hours: {util_dt.seconds_to_hours(work.left)}")
+                logger.info(f"over hours: {work.left}")
 
-            if work.left <= 600:
+            if util_dt.hours_to_seconds(work.left) <= 600:
                 logger.debug(f"you must checkout!!")
 
                 mailer.send(mail_config['outlook']['id'], '[Alert] You must checkout!!',
-                            f"You must checkout, left {util_dt.seconds_to_hours(work.left)}")
+                            f"You must checkout, left {work.left}")
+
+        return 0
+
+    def report_for_month(self, year: int = None, month: int = None):
+        now = datetime.now()
+        if year is None:
+            year = now.year
+        if month is None:
+            month = now.month
+        if year > now.year:
+            raise ValueError("저는 미래를 예측할 수 없어요...")
+        elif year == now.year and month > now.month:
+            raise ValueError("저는 미래를 예측할 수 없어요...")
+
+        data = LocalSchema()
+
+        driver = self.__data_stores[DataStoreEnum.CSV]
+
+        if isinstance(driver, LocalCsvDriver):
+            data_list = driver.get_by_month(data, year, month)
+        else:
+            self.__logger.error("this instance is not LocalCsvDriver")
+            return 1
+
+        self.__logger.info(f"find data in {year}-{month} (count: {len(data_list)})")
+
+        data_path = self.__constants['data']
+        local_data_path = os.path.join(data_path, 'local')
+
+        if not os.path.exists(local_data_path):
+            self.__logger.info("not exists path...")
+            os.mkdir(local_data_path)
+            self.__logger.info(f"make dir: {local_data_path}")
+
+        store_path = os.path.join(local_data_path, f"{year}-{month}")
+
+        result = driver.export_csv(store_path, data_list)
+        if result is None:
+            self.__logger.error("failed export csv")
+            return 1
+        else:
+            self.__logger.info(f"success export csv: {store_path}")
+
+        checker = self.__checker
+        checker.set_driver(driver)
+        work_hour = checker.get_work_hours_month(year, month)
+
+        mail_config = self.__configs['mailer']
+        mailer = self.__mailer
+        mailer.attachment([store_path])
+        mailer.send(mail_config['outlook']['id'], f"[Report] {year}-{month}",
+                    f"days: {work_hour.days}, acc: {work_hour.acc}, avg: {work_hour.avg}")
 
         return 0
 
