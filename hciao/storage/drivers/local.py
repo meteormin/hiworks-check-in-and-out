@@ -1,11 +1,29 @@
 import copy
 import json
 import os
-from hciao.storage.drivers.abstracts import Driver, Schema, T
-from hciao.utils import object
-from dataclasses import dataclass
 import pandas
 import dfquery
+from enum import Enum
+from dataclasses import dataclass
+from hciao.storage.drivers.abstracts import Driver, Schema, T
+from hciao.utils import object
+
+
+def sync_local_storages(data_stores: list[Driver]):
+    data_list = []
+    for store in data_stores:
+        data_list.append(store.all(LocalSchema()))
+
+    max_idx = 0
+    for idx, data in enumerate(data_list):
+        if len(data) > len(data_list[max_idx]):
+            max_idx = idx
+
+    for idx, store in enumerate(data_stores):
+        if idx == max_idx:
+            continue
+        for data in data_list[max_idx]:
+            store.save(data.data_id, data)
 
 
 def make_local_dir(path: str):
@@ -15,6 +33,14 @@ def make_local_dir(path: str):
         return
 
     os.mkdir(local_path)
+
+
+class DataStoreEnum(str, Enum):
+    JSON = 'json'
+    CSV = 'csv'
+
+    def __str__(self):
+        return self.value
 
 
 @dataclass()
@@ -29,23 +55,31 @@ class LocalSchema(Schema):
 
 
 class LocalJsonDriver(Driver):
+    data_list: list[LocalSchema] = []
 
     def __init__(self, config: dict):
         super().__init__(config)
         make_local_dir(config['path'])
 
         self.path = os.path.join(config['path'], 'local')
+        self.data_list = self.all(LocalSchema())
 
     def all(self, data: LocalSchema) -> list[LocalSchema]:
+        if self.data_list is not None and len(self.data_list) != 0:
+            return self.data_list
+
         dir_list = os.listdir(self.path)
         data_list = []
         for filename in dir_list:
-            ext = os.path.splitext(filename)[1]
+            basename = os.path.basename(filename).split('_')[-1]
+            [data_id, ext] = os.path.splitext(basename)
+
             if ext == '.json':
                 with open(os.path.join(self.path, filename), encoding='utf-8') as f:
                     json_dict = json.load(f)
 
                 copy_data = copy.deepcopy(data)
+                copy_data.data_id = data_id
                 data_list.append(copy_data.map(json_dict))
 
         return data_list
@@ -64,6 +98,16 @@ class LocalJsonDriver(Driver):
     def save(self, date_key: str, data: LocalSchema):
         filename = 'local_' + date_key + '.json'
         json_string = object.object_to_json(data)
+
+        exists = None
+        for i, data in enumerate(self.data_list):
+            if data.data_id == date_key:
+                exists = {'index': i, 'data': data}
+
+        if exists is not None:
+            self.data_list[exists['index']] = exists['data']
+        else:
+            self.data_list.append(data)
 
         with open(os.path.join(self.path, filename), 'w', encoding='utf-8') as f:
             rs = f.write(json_string)
@@ -165,11 +209,19 @@ class LocalCsvDriver(Driver):
         filename = 'local_all.csv'
 
         data_list = self.all(copy.deepcopy(data))
-        data_list.append(data)
+        exists = None
+        for i, data in enumerate(data_list):
+            if data.data_id == data_id:
+                exists = {'index': i, 'data': data}
+
+        if exists is not None:
+            data_list[exists['index']] = exists['data']
+        else:
+            data_list.append(data)
 
         self.df = self._to_df(data_list)
 
-        return self.df.to_csv(os.path.join(self.path, filename))
+        return self.df.to_csv(os.path.join(self.path, filename), index=False)
 
     def export_csv(self, path: str, data_list: list[LocalSchema]) -> str | None:
         df = self._to_df(data_list)
