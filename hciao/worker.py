@@ -1,7 +1,6 @@
 import os
 import time
 import subprocess
-from enum import Enum
 from datetime import datetime, date
 from configparser import ConfigParser
 from selenium import webdriver
@@ -20,17 +19,11 @@ from hciao.storage.drivers.local import (
     LocalSchema,
     LocalJsonDriver,
     LocalCsvDriver,
+    DataStoreEnum,
+    sync_local_storages
 )
 from hciao.storage.drivers.abstracts import Driver
 from hciao.mailer.mailer import SimpleMailer
-
-
-class DataStoreEnum(str, Enum):
-    JSON = 'json'
-    CSV = 'csv'
-
-    def __str__(self):
-        return self.value
 
 
 class Worker:
@@ -59,6 +52,8 @@ class Worker:
 
         self.__data_stores[DataStoreEnum.JSON] = self.__get_local_storage(self.__constants['storage'])
         self.__data_stores[DataStoreEnum.CSV] = self.__get_local_csv_storage(self.__constants['storage'])
+
+        sync_local_storages(list(self.__data_stores.values()))
 
         self.__mailer = self.__get_mailer(self.__configs['mailer'])
         self.__browser = self.__get_browser(self.__logger.prefix, self.__configs['hiworks']['default']['url'])
