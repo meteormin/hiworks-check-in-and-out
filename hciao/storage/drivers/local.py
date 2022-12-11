@@ -8,6 +8,15 @@ import pandas
 import dfquery
 
 
+def make_local_dir(path: str):
+    local_path = os.path.join(path, 'local')
+
+    if os.path.exists(local_path):
+        return
+
+    os.mkdir(local_path)
+
+
 @dataclass()
 class LocalSchema(Schema):
     login_id: str | None = None
@@ -23,6 +32,8 @@ class LocalJsonDriver(Driver):
 
     def __init__(self, config: dict):
         super().__init__(config)
+        make_local_dir(config['path'])
+
         self.path = os.path.join(config['path'], 'local')
 
     def all(self, data: LocalSchema) -> list[LocalSchema]:
@@ -67,6 +78,8 @@ class LocalCsvDriver(Driver):
 
     def __init__(self, config: dict):
         super().__init__(config)
+        make_local_dir(config['path'])
+
         self.path = os.path.join(config['path'], 'local')
         self.df = self._all()
         self._query = dfquery.make(self._TABLE_NAME, self.df)
