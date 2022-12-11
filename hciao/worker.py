@@ -50,10 +50,14 @@ class Worker:
         }
         self.__logger = self.__get_logger('worker')
 
-        self.__data_stores[DataStoreEnum.JSON] = self.__get_local_storage(self.__constants['storage'])
-        self.__data_stores[DataStoreEnum.CSV] = self.__get_local_csv_storage(self.__constants['storage'])
+        self.__data_stores = {
+            DataStoreEnum.JSON: self.__get_local_storage(self.__constants['storage']),
+            DataStoreEnum.CSV: self.__get_local_csv_storage(self.__constants['storage'])
+        }
 
-        sync_local_storages(list(self.__data_stores.values()))
+        self.__logger.info('sync local storages...')
+        save_count = sync_local_storages(list(self.__data_stores.values()))
+        self.__logger.info(f'sync rows: {save_count}')
 
         self.__mailer = self.__get_mailer(self.__configs['mailer'])
         self.__browser = self.__get_browser(self.__logger.prefix, self.__configs['hiworks']['default']['url'])

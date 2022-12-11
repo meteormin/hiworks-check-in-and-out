@@ -5,4 +5,5 @@ pytimekr~=0.1.0
 packaging~=21.3
 pandas~=1.5.1
 APScheduler~=3.9.1.post1
+natsort~=8.2.0
 git+https://github.com/miniyus/dfquery.git

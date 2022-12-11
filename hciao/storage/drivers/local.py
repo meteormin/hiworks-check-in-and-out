@@ -3,6 +3,7 @@ import json
 import os
 import pandas
 import dfquery
+from natsort import natsorted
 from enum import Enum
 from dataclasses import dataclass
 from hciao.storage.drivers.abstracts import Driver, Schema, T
@@ -15,15 +16,19 @@ def sync_local_storages(data_stores: list[Driver]):
         data_list.append(store.all(LocalSchema()))
 
     max_idx = 0
+
     for idx, data in enumerate(data_list):
         if len(data) > len(data_list[max_idx]):
             max_idx = idx
 
+    save_count = 0
     for idx, store in enumerate(data_stores):
         if idx == max_idx:
             continue
         for data in data_list[max_idx]:
+            save_count += 1
             store.save(data.data_id, data)
+    return save_count
 
 
 def make_local_dir(path: str):
@@ -68,7 +73,7 @@ class LocalJsonDriver(Driver):
         if self.data_list is not None and len(self.data_list) != 0:
             return self.data_list
 
-        dir_list = os.listdir(self.path)
+        dir_list = natsorted(os.listdir(self.path))
         data_list = []
         for filename in dir_list:
             basename = os.path.basename(filename).split('_')[-1]
@@ -97,17 +102,19 @@ class LocalJsonDriver(Driver):
 
     def save(self, date_key: str, data: LocalSchema):
         filename = 'local_' + date_key + '.json'
-        json_string = object.object_to_json(data)
+        data.data_id = date_key
 
         exists = None
-        for i, data in enumerate(self.data_list):
-            if data.data_id == date_key:
+        for i, exists_data in enumerate(self.data_list):
+            if exists_data.data_id == date_key:
                 exists = {'index': i, 'data': data}
 
         if exists is not None:
             self.data_list[exists['index']] = exists['data']
         else:
             self.data_list.append(data)
+
+        json_string = object.object_to_json(data)
 
         with open(os.path.join(self.path, filename), 'w', encoding='utf-8') as f:
             rs = f.write(json_string)
@@ -181,7 +188,10 @@ class LocalCsvDriver(Driver):
         if self.df is not None:
             return self.df
 
-        return pandas.read_csv(os.path.join(self.path, filename))
+        if os.path.exists(filename):
+            return pandas.read_csv(os.path.join(self.path, filename))
+
+        return pandas.DataFrame()
 
     def all(self, data: LocalSchema) -> list[LocalSchema]:
         df = self._all()
@@ -205,24 +215,31 @@ class LocalCsvDriver(Driver):
             df = pandas.DataFrame.from_records([data.__dict__])
         return df
 
-    def save(self, data_id, data: LocalSchema) -> str | None:
-        filename = 'local_all.csv'
-
-        data_list = self.all(copy.deepcopy(data))
+    def save(self, data_id, data: LocalSchema) -> LocalSchema | None:
+        data_list = self.all(LocalSchema())
         exists = None
-        for i, data in enumerate(data_list):
-            if data.data_id == data_id:
+        for i, exists_data in enumerate(data_list):
+            if exists_data.data_id == data_id:
                 exists = {'index': i, 'data': data}
 
         if exists is not None:
             data_list[exists['index']] = exists['data']
         else:
+            data.data_id = data_id
             data_list.append(data)
 
         self.df = self._to_df(data_list)
+
+        return data
+
+    def commit(self):
+        filename = 'local_all.csv'
 
         return self.df.to_csv(os.path.join(self.path, filename), index=False)
 
     def export_csv(self, path: str, data_list: list[LocalSchema]) -> str | None:
         df = self._to_df(data_list)
         return df.to_csv(path)
+
+    def __del__(self):
+        self.commit()
