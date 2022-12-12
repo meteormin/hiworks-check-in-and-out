@@ -140,7 +140,7 @@ class Worker:
         )
 
     @classmethod
-    def __get_local_csv_storage(cls, path: str):
+    def __get_local_csv_storage(cls, path: str) -> LocalCsvDriver:
         return LocalCsvDriver({'path': path})
 
     def checkin(self, login_id: str, passwd: str) -> int:
@@ -339,7 +339,7 @@ class Worker:
 
         return 0
 
-    def report_for_month(self, month: int = None, year: int = None):
+    def report_for_month(self, month: int = None, year: int = None) -> int:
         now = datetime.now()
         if year is None:
             year = now.year
@@ -386,11 +386,11 @@ class Worker:
 
         return 0
 
-    def test(self):
+    def test(self) -> int:
         """
         just test
-        :return: void
-        :rtype: None
+        :return: int
+        :rtype: int
         """
         self.__logger.info('try test...')
 
@@ -404,3 +404,5 @@ class Worker:
         if check_time is not None:
             self.__logger.debug(f"checkin_at: {check_time['checkin_at']}")
             self.__logger.debug(f"checkout_at: {check_time['checkout_at']}")
+
+        return 0

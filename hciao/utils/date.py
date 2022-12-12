@@ -37,7 +37,7 @@ def hours_to_seconds(hours: str) -> float:
     return int(seconds) + ms + hs
 
 
-def get_last_day_of_month(month: int, year: int = None):
+def get_last_day_of_month(month: int, year: int = None) -> int:
     if year is None or year < 0:
         year = datetime.datetime.now().year
 
