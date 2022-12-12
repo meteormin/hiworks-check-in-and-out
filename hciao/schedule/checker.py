@@ -91,9 +91,9 @@ class Checker:
 
             if work_time is not None:
                 acc += hours_to_seconds(work_time.work)
-                avg = acc / day
                 work_hour.days += 1
-                work_hour.acc = seconds_to_hours(acc)
-                work_hour.avg = seconds_to_hours(avg)
+
+        work_hour.acc = seconds_to_hours(acc)
+        work_hour.avg = seconds_to_hours(acc / work_hour.days)
 
         return work_hour

@@ -74,6 +74,13 @@ def check_and_alert():
 
 
 @cli.command()
+@click.option('-m', '--month', required=False, type=click.types.INT, help='month')
+@click.option('-y', '--year', required=False, type=click.types.INT, help='year')
+def report_for_month(month: int = None,year: int = None):
+    return get_worker().report_for_month(month, year)
+
+
+@cli.command()
 def test():
     return get_worker().test()
 

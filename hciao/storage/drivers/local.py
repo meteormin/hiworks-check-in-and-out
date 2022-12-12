@@ -124,7 +124,6 @@ class LocalJsonDriver(Driver):
 
 class LocalCsvDriver(Driver):
     df: pandas.DataFrame | None = None
-    _query: dfquery.Core
     _TABLE_NAME = 'local'
 
     def __init__(self, config: dict):
@@ -133,10 +132,9 @@ class LocalCsvDriver(Driver):
 
         self.path = os.path.join(config['path'], 'local')
         self.df = self._all()
-        self._query = dfquery.make(self._TABLE_NAME, self.df)
 
     def get_query(self):
-        return copy.deepcopy(self._query)
+        return dfquery.make(self._TABLE_NAME, self.df)
 
     def get(self, data: LocalSchema, data_id: str | int = None) -> LocalSchema | None:
         query = self.get_query()
@@ -239,7 +237,7 @@ class LocalCsvDriver(Driver):
 
     def export_csv(self, path: str, data_list: list[LocalSchema]) -> str | None:
         df = self._to_df(data_list)
-        return df.to_csv(path)
+        return df.to_csv(path, index=False)
 
     def __del__(self):
         self.commit()

@@ -339,7 +339,7 @@ class Worker:
 
         return 0
 
-    def report_for_month(self, year: int = None, month: int = None):
+    def report_for_month(self, month: int = None, year: int = None):
         now = datetime.now()
         if year is None:
             year = now.year
@@ -370,18 +370,13 @@ class Worker:
             os.mkdir(local_data_path)
             self.__logger.info(f"make dir: {local_data_path}")
 
-        store_path = os.path.join(local_data_path, f"{year}-{month}")
+        store_path = os.path.join(local_data_path, f"{year}-{month}.csv")
 
-        result = driver.export_csv(store_path, data_list)
-        if result is None:
-            self.__logger.error("failed export csv")
-            return 1
-        else:
-            self.__logger.info(f"success export csv: {store_path}")
+        driver.export_csv(store_path, data_list)
 
         checker = self.__checker
         checker.set_driver(driver)
-        work_hour = checker.get_work_hours_month(year, month)
+        work_hour = checker.get_work_hours_month(month, year)
 
         mail_config = self.__configs['mailer']
         mailer = self.__mailer
