@@ -135,7 +135,9 @@ schedule configuration
 - second: 등록할 주기의 초 입니다.
 - day_of_week: 등록할 주기의 요일 입니다.
 - hour, minute, second, day_of_week은 crontab의 표현식을 사용합니다.
-    - 자세한 표현식은 https://en.wikipedia.org/wiki/Cron#CRON_expression 참조
+    - 좀 더 자세한 표현식 참조
+      - Cron 위키 피디아: https://en.wikipedia.org/wiki/Cron#CRON_expression 
+      - APScheduler 공식 문서: https://apscheduler.readthedocs.io/en/3.x/modules/triggers/cron.html
 
 ### For Windows batch
 
