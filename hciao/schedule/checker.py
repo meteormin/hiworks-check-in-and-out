@@ -90,7 +90,9 @@ class Checker:
             work_time = self.get_work_hour(date_id)
 
             if work_time is not None:
-                acc += hours_to_seconds(work_time.work)
+                if work_time.work is not None:
+                    acc += hours_to_seconds(work_time.work)
+
                 work_hour.days += 1
 
         work_hour.acc = seconds_to_hours(acc)

@@ -240,4 +240,5 @@ class LocalCsvDriver(Driver):
         return df.to_csv(path, index=False)
 
     def __del__(self):
-        self.commit()
+        if len(self.df) != 0:
+            self.commit()

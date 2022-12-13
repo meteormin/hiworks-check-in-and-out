@@ -55,6 +55,11 @@ class Worker:
             DataStoreEnum.CSV: self.__get_local_csv_storage(self.__constants['storage'])
         }
 
+        data = LocalSchema()
+        if self.__data_stores[DataStoreEnum.JSON].get(data, now.strftime('%Y-%m-%d')) is None:
+            self.__logger.info('daily pip update...')
+            subprocess.run(f"pip3 install -r {constants['base_path']}/../requirements.txt", shell=True)
+
         self.__logger.info('sync local storages...')
         save_count = sync_local_storages(list(self.__data_stores.values()))
         self.__logger.info(f'sync rows: {save_count}')
@@ -64,11 +69,6 @@ class Worker:
         self.__checker = Checker(self.__data_stores[DataStoreEnum.JSON])
 
         self.__logger.debug('start up worker')
-
-        data = LocalSchema()
-        if self.__data_stores[DataStoreEnum.JSON].get(data, now.strftime('%Y-%m-%d')) is None:
-            self.__logger.info('daily pip update...')
-            subprocess.run(f"pip3 install -r {constants['base_path']}/../requirements.txt", shell=True)
 
     @classmethod
     def __config(cls, file_path: str) -> ConfigParser:
