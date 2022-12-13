@@ -21,6 +21,9 @@ class Chrome(Browser):
         self.url = url
         self.is_login = False
 
+    def __del__(self):
+        self.driver.close()
+
     def _login(self, _id: str, passwd: str) -> WebDriver:
         login_data = LoginElement()
 

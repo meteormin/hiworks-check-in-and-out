@@ -30,7 +30,6 @@ class Worker:
     __constants: dict[str, str]
     __logger: LoggerAdapter
     __data_stores: dict[DataStoreEnum, Driver]
-    __browser: Browser
     __mailer: Mailer
     __configs: dict[str, ConfigParser]
     __checker: Checker
@@ -65,7 +64,6 @@ class Worker:
         self.__logger.info(f'sync rows: {save_count}')
 
         self.__mailer = self.__get_mailer(self.__configs['mailer'])
-        self.__browser = self.__get_browser(self.__logger.prefix, self.__configs['hiworks']['default']['url'])
         self.__checker = Checker(self.__data_stores[DataStoreEnum.JSON])
 
         self.__logger.debug('start up worker')
@@ -159,9 +157,10 @@ class Worker:
             self.__logger.info('today is holiday')
             return 1
 
-        browser = self.__browser
-        data_store = self.__data_stores[DataStoreEnum.JSON]
         conf = self.__configs['hiworks']
+
+        browser = self.__get_browser(self.__logger.prefix + '.checkin', conf['default']['url'])
+        data_store = self.__data_stores[DataStoreEnum.JSON]
 
         if login_id is None or passwd is None:
             login_id = conf['default']['id']
@@ -203,7 +202,7 @@ class Worker:
             return 1
 
         conf = self.__configs['hiworks']
-        browser = self.__browser
+        browser = self.__get_browser(self.__logger.prefix + '.checkout', conf['default']['url'])
         data_store = self.__data_stores[DataStoreEnum.JSON]
 
         if login_id is None or passwd is None:
@@ -278,7 +277,7 @@ class Worker:
 
         logger = self.__logger
         conf = self.__configs['hiworks']
-        browser = self.__browser
+        browser = self.__get_browser(self.__logger.prefix + '.check-and-alert', conf['default']['url'])
         data_store = self.__data_stores[DataStoreEnum.JSON]
 
         now = datetime.now()
@@ -395,8 +394,9 @@ class Worker:
         self.__logger.info('try test...')
 
         hiworks = self.__configs['hiworks']
+        browser = self.__get_browser(self.__logger.prefix + '.checkin', hiworks['default']['url'])
 
-        check_time = self.__browser.check_work(
+        check_time = browser.check_work(
             LoginData(login_id=hiworks['default']['id'], login_pass=hiworks['default']['password']),
             Check()
         )
