@@ -160,9 +160,3 @@ schedule configuration
     - 좀 더 자세한 표현식 참조
       - Cron 위키 피디아: https://en.wikipedia.org/wiki/Cron#CRON_expression 
       - APScheduler 공식 문서: https://apscheduler.readthedocs.io/en/3.x/modules/triggers/cron.html
-
-### For Windows batch
-
-```shell
-./hiworks-checker.bat {command-name} {arguments} {--options}
-```
