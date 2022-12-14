@@ -1,5 +1,21 @@
 # automatic hiworks checkin and out
 
+-----
+
+## Purpose & Reason
+
+회사의 인사 정책이 불합리 하다고 생각하여 개인적으로 개발을 진행 했다.
+
+야근 수당은 포괄 임금제를 적용하기 때문에 둘째 치고, 야근 식대는 계약할 때 초과 2시간 이상 근무일 때 신청할 수 있는 것으로 안내 받았음. 그러나 야근을 미리 보고 하여야 인정 해줌
+대체 누가 "오늘은 야근 해야 겠다!" 하고 야근을 하는가? 이런 식의 정책은 결국 야근을 하게 되더라도 야근 식대를 어떻게든 주기 싫다는 것으로 밖에 보이지 않는다.
+
+그렇다면 나도 어제 야근을 했으니 오늘은 일찍 퇴근 하겠다.
+위에서 설명한 정책으로 바뀌기 이전에는 초과 근무에 대한 내용이 하이웍스에 기록이 되었다. 하지만 이제는 초과 근무로 퇴근을 찍어도 무조건 8시간으로 기록이 된다.
+그렇다면 야근을 해도 기록상으로 나는 항상 정시 퇴근한 것으로 통게에 보인다. 하지만 1분이라도 조기 퇴근을 하게 되면 "조기 퇴근"이라고 표시된다.
+이런 점이 마음에 들지 않기 때문에 출퇴근 자동화 기능과 출퇴근 내역의 히스토리를 남길 수 있는 프로그램을 개발하였다.
+
+
+
 ## Install
 
 ### requirements
@@ -27,11 +43,13 @@ git+https://github.com/miniyus/dfquery.git
 Install python3.10: https://www.python.org/downloads/
 
 For Mac homebrew: https://formulae.brew.sh/formula/python@3.10
+
 ```shell
 homebrew install python@3.10
 ```
 
 **Download source code**
+
 ```shell
 git clone https://github.com/smyoo-testworks/hiworks-check-in-and-out.git
 
@@ -158,5 +176,5 @@ schedule configuration
 - day_of_week: 등록할 주기의 요일 입니다.
 - hour, minute, second, day_of_week은 crontab의 표현식을 사용합니다.
     - 좀 더 자세한 표현식 참조
-      - Cron 위키 피디아: https://en.wikipedia.org/wiki/Cron#CRON_expression 
-      - APScheduler 공식 문서: https://apscheduler.readthedocs.io/en/3.x/modules/triggers/cron.html
+        - Cron 위키 피디아: https://en.wikipedia.org/wiki/Cron#CRON_expression
+        - APScheduler 공식 문서: https://apscheduler.readthedocs.io/en/3.x/modules/triggers/cron.html
