@@ -22,12 +22,29 @@ git+https://github.com/miniyus/dfquery.git
 
 ### install
 
+**Install Python**
+
+Install python3.10: https://www.python.org/downloads/
+
+For Mac homebrew: https://formulae.brew.sh/formula/python@3.10
+```shell
+homebrew install python@3.10
+```
+
+**Download source code**
 ```shell
 git clone https://github.com/smyoo-testworks/hiworks-check-in-and-out.git
 
 python -m venv venv
 
+# Mac
 source ./venv/activate
+
+# Linux
+./venv/activate
+
+# Windows(CMD)
+.\venv\activate
 
 pip3 install -r requirements.txt
 ```
@@ -81,6 +98,8 @@ sh ./hiworks-checker.sh {checkin or checkout}
 # check and alert
 ./hiworks-checker.sh check-and-alert
 
+# Report For Month
+./hiworks-checker.sh repotrt-for-month
 ```
 
 ### Scheduler
@@ -104,7 +123,10 @@ sh ./hiworks-checker.sh {checkin or checkout}
 
 ```shell
 
-sh ./hiworks-checker.sh schedule
+hiworks-checker.sh schedule
+
+# Windows
+hiworks-checker.bat schedule
 
 ```
 
