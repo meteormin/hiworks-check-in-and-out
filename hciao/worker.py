@@ -392,7 +392,7 @@ class Worker:
         self.__logger.info('try test...')
 
         hiworks = self.__configs['hiworks']
-        browser = self.__get_browser(self.__logger.prefix + '.checkin', hiworks['url'])
+        browser = self.__get_browser(self.__logger.prefix + '.test', hiworks['url'])
 
         check_time = browser.check_work(
             LoginData(login_id=hiworks['id'], login_pass=hiworks['password']),
