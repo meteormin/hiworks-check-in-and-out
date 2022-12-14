@@ -3,7 +3,6 @@
 chromedriver
 venv
 .idea
-hiworks.ini
-mailer.ini
+settings.ini
 .DS_Store
 __pycache__

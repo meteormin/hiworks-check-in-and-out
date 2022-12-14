@@ -71,19 +71,15 @@ pip3 install -r requirements.txt
 
 ### Configure
 
-hiworks.ini
+settings.ini
 
 ```ini
-[default]
+[hiworks]
 url = https://office.hiworks.com/testworks.onhiworks.com/
 id = your-id
 password = your-password
-```
 
-mailer.ini
-
-```ini
-[outlook]
+[mailer.outlook]
 url = outlook.office365.com
 id = your-id
 password = your-password
@@ -149,7 +145,7 @@ hiworks-checker.bat schedule
 ```
 
 schedule configuration
-> [scheduler.json](./hciao/config/scheduler.json)
+> [scheduler.json](config/scheduler.json)
 
 ```json
 {

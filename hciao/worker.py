@@ -31,7 +31,7 @@ class Worker:
     __logger: LoggerAdapter
     __data_stores: dict[DataStoreEnum, Driver]
     __mailer: Mailer
-    __configs: dict[str, ConfigParser]
+    __configs: ConfigParser
     __checker: Checker
 
     def __init__(self, constants: dict[str, str]):
@@ -43,10 +43,8 @@ class Worker:
         now = datetime.now()
 
         self.__constants = constants
-        self.__configs = {
-            'hiworks': self.__config('../hiworks.ini'),
-            'mailer': self.__config('../mailer.ini')
-        }
+        self.__configs = self.__config('../settings.ini')
+
         self.__logger = self.__get_logger('worker')
 
         self.__data_stores = {
@@ -63,7 +61,7 @@ class Worker:
         save_count = sync_local_storages(list(self.__data_stores.values()))
         self.__logger.info(f'sync rows: {save_count}')
 
-        self.__mailer = self.__get_mailer(self.__configs['mailer'])
+        self.__mailer = self.__get_mailer(dict(self.__configs['mailer.outlook']))
         self.__checker = Checker(self.__data_stores[DataStoreEnum.JSON])
 
         self.__logger.debug('start up worker')
@@ -132,9 +130,9 @@ class Worker:
         :rtype: Mailer
         """
         return SimpleMailer(
-            host=mail_config['outlook']['url'],
-            login_id=mail_config['outlook']['id'],
-            login_pass=mail_config['outlook']['password']
+            host=mail_config['url'],
+            login_id=mail_config['id'],
+            login_pass=mail_config['password']
         )
 
     @classmethod
@@ -159,12 +157,12 @@ class Worker:
 
         conf = self.__configs['hiworks']
 
-        browser = self.__get_browser(self.__logger.prefix + '.checkin', conf['default']['url'])
+        browser = self.__get_browser(self.__logger.prefix + '.checkin', conf['url'])
         data_store = self.__data_stores[DataStoreEnum.JSON]
 
         if login_id is None or passwd is None:
-            login_id = conf['default']['id']
-            passwd = conf['default']['password']
+            login_id = conf['id']
+            passwd = conf['password']
 
         check_time = browser.checkin(LoginData(login_id=login_id, login_pass=passwd), Checkin())
 
@@ -202,12 +200,12 @@ class Worker:
             return 1
 
         conf = self.__configs['hiworks']
-        browser = self.__get_browser(self.__logger.prefix + '.checkout', conf['default']['url'])
+        browser = self.__get_browser(self.__logger.prefix + '.checkout', conf['url'])
         data_store = self.__data_stores[DataStoreEnum.JSON]
 
         if login_id is None or passwd is None:
-            login_id = conf['default']['id']
-            passwd = conf['default']['password']
+            login_id = conf['id']
+            passwd = conf['password']
 
         check_time = browser.checkout(LoginData(login_id=login_id, login_pass=passwd), Checkout())
 
@@ -277,13 +275,13 @@ class Worker:
 
         logger = self.__logger
         conf = self.__configs['hiworks']
-        browser = self.__get_browser(self.__logger.prefix + '.check-and-alert', conf['default']['url'])
+        browser = self.__get_browser(self.__logger.prefix + '.check-and-alert', conf['url'])
         data_store = self.__data_stores[DataStoreEnum.JSON]
 
         now = datetime.now()
 
-        login_id = conf['default']['id']
-        passwd = conf['default']['password']
+        login_id = conf['id']
+        passwd = conf['password']
 
         check_time = browser.check_work(LoginData(login_id, passwd), Check())
 
@@ -308,12 +306,12 @@ class Worker:
             is_checkin = False
 
         hiworks = self.__configs['hiworks']
-        mail_config = self.__configs['mailer']
+        mail_config = self.__configs['mailer.outlook']
         mailer = self.__mailer
 
         if not is_checkin:
-            mailer.send(mail_config['outlook']['id'], f"[Alert] You Don't Checkin...",
-                        f"go: {hiworks['default']['url']}")
+            mailer.send(mail_config['id'], f"[Alert] You Don't Checkin...",
+                        f"go: {hiworks['url']}")
 
         if data.work_hour is not None:
             logger.debug(f"already checkout: {data.checkout_at}")
@@ -333,7 +331,7 @@ class Worker:
             if util_dt.hours_to_seconds(work.left) <= 600:
                 logger.debug(f"you must checkout!!")
 
-                mailer.send(mail_config['outlook']['id'], '[Alert] You must checkout!!',
+                mailer.send(mail_config['mailer.outlook']['id'], '[Alert] You must checkout!!',
                             f"You must checkout, left {work.left}")
 
         return 0
@@ -377,10 +375,10 @@ class Worker:
         checker.set_driver(driver)
         work_hour = checker.get_work_hours_month(month, year)
 
-        mail_config = self.__configs['mailer']
+        mail_config = self.__configs['mailer.outlook']
         mailer = self.__mailer
         mailer.attachment([store_path])
-        mailer.send(mail_config['outlook']['id'], f"[Report] {year}-{month}",
+        mailer.send(mail_config['id'], f"[Report] {year}-{month}",
                     f"days: {work_hour.days}, acc: {work_hour.acc}, avg: {work_hour.avg}")
 
         return 0
@@ -394,10 +392,10 @@ class Worker:
         self.__logger.info('try test...')
 
         hiworks = self.__configs['hiworks']
-        browser = self.__get_browser(self.__logger.prefix + '.checkin', hiworks['default']['url'])
+        browser = self.__get_browser(self.__logger.prefix + '.checkin', hiworks['url'])
 
         check_time = browser.check_work(
-            LoginData(login_id=hiworks['default']['id'], login_pass=hiworks['default']['password']),
+            LoginData(login_id=hiworks['id'], login_pass=hiworks['password']),
             Check()
         )
 

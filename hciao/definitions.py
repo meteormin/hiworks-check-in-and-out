@@ -4,7 +4,7 @@ BASE_PATH = os.path.dirname(os.path.abspath(__file__))
 
 PATH = {
     'base_path': BASE_PATH,
-    'config': os.path.join(BASE_PATH, 'config'),
+    'config': os.path.join(BASE_PATH, '../config'),
     'browser': os.path.join(BASE_PATH, 'browser'),
     'storage': os.path.join(BASE_PATH, 'storage'),
     'logger': os.path.join(BASE_PATH, 'logger'),
