@@ -6,7 +6,7 @@ SCHEDULER = {
             None
         ],
         "hour": "09",
-        "minute": "00",
+        "minute": "03",
         "second": "00",
         "day_of_week": "mon-sat"
     },
@@ -17,7 +17,7 @@ SCHEDULER = {
             None
         ],
         "hour": "20",
-        "minute": "00",
+        "minute": "03",
         "second": "00",
         "day_of_week": "mon-sat"
     },
