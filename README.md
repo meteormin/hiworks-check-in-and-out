@@ -141,12 +141,12 @@ hiworks-checker.bat schedule
 ```
 
 schedule configuration
-> [scheduler.json](config/scheduler.json)
+> [scheduler.json](config/scheduler.py)
 
 ```json
 {
   "test": {
-    "command": "test(command-name)",
+    "func": "test(command-name)",
     "args": [
       "argument1",
       "argument2"
@@ -159,7 +159,7 @@ schedule configuration
 }
 ```
 
-- command: CLI 명령에 등록 되어 있는 명령어 이름을 전달 합니다.
+- func: CLI 명령에 등록 되어 있는 명령어 이름을 전달 합니다.
     - 단, '-'이 포함된 명령은 '-' 대신 '_'(으)로 표기 해야 합니다.
 - args: CLI 명령에 등록 되어 있는 명령어의 옵션 및 인수를 전달 합니다.
 - hour: 등록할 주기의 시간 입니다.
