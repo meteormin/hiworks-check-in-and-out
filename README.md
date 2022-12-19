@@ -114,7 +114,7 @@ sh ./hiworks-checker.sh {checkin or checkout}
 
 ### Scheduler
 
-**~~use Crontab~~**
+**use Crontab**
 
 ```shell
 # 09시 정각 checkin
@@ -130,6 +130,8 @@ sh ./hiworks-checker.sh {checkin or checkout}
 
 **schedule command**
 > schedule 커맨드를 통해 크론 없이 스케줄링이 가능합니다.
+
+> 상대적으로 불안정하여, 하루에 한번 재시작 권장 
 
 ```shell
 
