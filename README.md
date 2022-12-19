@@ -48,17 +48,28 @@ homebrew install python@3.10
 
 ```shell
 git clone https://github.com/smyoo-testworks/hiworks-check-in-and-out.git
+````
 
+**Create venv and Install Packages**
+```shell
+# 설치 스크립트 실행
+# Mac
+./install.sh
+
+# windows
+install.bat
+
+# 수동 설치
 python -m venv venv
 
 # Mac
 source ./venv/activate
 
 # Linux
-./venv/activate
+source ./venv/activate
 
 # Windows(CMD)
-.\venv\activate
+venv\activate.bat
 
 pip3 install -r requirements.txt
 ```
