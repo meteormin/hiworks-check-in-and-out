@@ -1,6 +1,6 @@
 @echo off
 
-SET BASEDIR=%undefined%
+SET BASEDIR=%~dp0
 IF "-d" "%BASEDIR%/venv" (
   echo "%BASEDIR%/venv is exists"
 ) ELSE (
