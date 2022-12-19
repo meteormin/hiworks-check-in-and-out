@@ -125,7 +125,7 @@ sh ./hiworks-checker.sh {checkin or checkout}
 
 ### Scheduler
 
-**~~use Crontab~~**
+**use Crontab**
 
 ```shell
 # 09시 정각 checkin
@@ -142,6 +142,8 @@ sh ./hiworks-checker.sh {checkin or checkout}
 **schedule command**
 > schedule 커맨드를 통해 크론 없이 스케줄링이 가능합니다.
 
+> 상대적으로 불안정하여, 하루에 한번 재시작 권장 
+
 ```shell
 
 hiworks-checker.sh schedule
@@ -152,12 +154,14 @@ hiworks-checker.bat schedule
 ```
 
 schedule configuration
-> [scheduler.json](config/scheduler.json)
+> [scheduler.py](config/scheduler.py)
 
-```json
-{
+```python
+# python 딕셔너리 작성
+
+SCHEDULER = {
   "test": {
-    "command": "test(command-name)",
+    "func": "test(command-name)",
     "args": [
       "argument1",
       "argument2"
@@ -170,7 +174,7 @@ schedule configuration
 }
 ```
 
-- command: CLI 명령에 등록 되어 있는 명령어 이름을 전달 합니다.
+- func: CLI 명령에 등록 되어 있는 명령어 이름을 전달 합니다.
     - 단, '-'이 포함된 명령은 '-' 대신 '_'(으)로 표기 해야 합니다.
 - args: CLI 명령에 등록 되어 있는 명령어의 옵션 및 인수를 전달 합니다.
 - hour: 등록할 주기의 시간 입니다.

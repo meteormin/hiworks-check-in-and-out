@@ -1,10 +1,9 @@
 import click
-import os
-import json
 from hciao.definitions import PATH, TIMEZONE
 from hciao.worker import Worker
 from hciao.schedule import scheduler
 from apscheduler.schedulers.background import BlockingScheduler
+import config
 
 
 def get_worker():
@@ -76,7 +75,7 @@ def check_and_alert():
 @cli.command()
 @click.option('-m', '--month', required=False, type=click.types.INT, help='month')
 @click.option('-y', '--year', required=False, type=click.types.INT, help='year')
-def report_for_month(month: int = None,year: int = None):
+def report_for_month(month: int = None, year: int = None):
     return get_worker().report_for_month(month, year)
 
 
@@ -87,21 +86,14 @@ def test():
 
 @cli.command()
 def schedule():
-    with open(os.path.join(PATH["config"], 'scheduler.json')) as f:
-        json_dict = json.load(f)
-
-    parse_dict = {}
+    scheduler_config = config.SCHEDULER
     worker = get_worker()
-    for k, v in json_dict.items():
-        parse_dict[k] = {}
-        if v['command']:
-            parse_dict[k]['func'] = getattr(worker, v['command'])
 
-            del v['command']
+    for k, v in scheduler_config.items():
+        if v['func']:
+            v['func'] = getattr(worker, v['func'])
 
-            parse_dict[k].update(v)
-
-    scheduler.register(BlockingScheduler(timezone=TIMEZONE), parse_dict)
+    scheduler.register(BlockingScheduler(timezone=TIMEZONE), scheduler_config)
 
 
 if __name__ == '__main__':
