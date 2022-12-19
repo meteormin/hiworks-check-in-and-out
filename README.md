@@ -143,10 +143,12 @@ hiworks-checker.bat schedule
 ```
 
 schedule configuration
-> [scheduler.json](config/scheduler.py)
+> [scheduler.py](config/scheduler.py)
 
-```json
-{
+```python
+# python 딕셔너리 작성
+
+SCHEDULER = {
   "test": {
     "func": "test(command-name)",
     "args": [
