@@ -19,19 +19,6 @@
 - python ^3.10 (하위 버전 호환 X)
 - pip ^22.2.2
 
-**Packages**
-
-```requirements.txt
-click~=8.1.3
-selenium==4.6.0
-webdriver-manager~=3.8.4
-pytimekr~=0.1.0
-packaging~=21.3
-pandas~=1.5.1
-APScheduler~=3.9.1.post1
-git+https://github.com/miniyus/dfquery.git
-```
-
 ### install
 
 **Install Python**
