@@ -13,9 +13,11 @@ class JobArgument:
     job_id: str | None = None
     func: callable = None
     args: list | None = None
-    second: str | None = None
+    month: str | None = None
+    day: str | None = None
     hour: str | None = None
     minute: str | None = None
+    second: str | None = None
     day_of_week: str | None = None
 
 
@@ -29,9 +31,11 @@ def register(s: BaseScheduler, config: dict):
             id=job.job_id,
             func=job.func,
             trigger='cron',
-            second=job.second,
-            minute=job.minute,
+            month=job.month,
+            day=job.day,
             hour=job.hour,
+            minute=job.minute,
+            second=job.second,
             day_of_week=job.day_of_week,
             args=job.args
         )
