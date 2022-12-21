@@ -153,6 +153,8 @@ SCHEDULER = {
       "argument1",
       "argument2"
     ],
+    "month": "*",
+    "day": "*",
     "hour": "*",
     "minute": "*",
     "second": "10",
