@@ -1,6 +1,7 @@
 import dataclasses
 import os
 import time
+from typing import Callable
 from apscheduler.schedulers.base import BaseScheduler
 from apscheduler.schedulers.blocking import BlockingScheduler
 from apscheduler.schedulers.background import BackgroundScheduler
@@ -11,7 +12,7 @@ from hciao.utils.object import map_from_dict
 @dataclasses.dataclass
 class JobArgument:
     job_id: str | None = None
-    func: callable = None
+    func: Callable[[], any] | None = None
     args: list | None = None
     month: str | None = None
     day: str | None = None
@@ -48,6 +49,22 @@ def register(s: BaseScheduler, config: dict):
                 return None
 
         return map_from_dict(args, job)
+
+    def _health_check() -> bool:
+        logger.info("health-check")
+        return True
+
+    _add_job(JobArgument(
+        job_id="health-check",
+        func=_health_check,
+        args=[],
+        month="*",
+        day="*",
+        hour="*",
+        minute="*/5",
+        second="00",
+        day_of_week="mon-fri"
+    ))
 
     for s_id, job_dict in config.items():
         job_args = _validate_job(job_dict)

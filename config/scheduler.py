@@ -10,7 +10,7 @@ SCHEDULER = {
         "hour": "09",
         "minute": "03",
         "second": "00",
-        "day_of_week": "mon-sat"
+        "day_of_week": "mon-fri"
     },
     "checkout": {
         "func": "checkout",
@@ -23,7 +23,7 @@ SCHEDULER = {
         "hour": "20",
         "minute": "03",
         "second": "00",
-        "day_of_week": "mon-sat"
+        "day_of_week": "mon-fri"
     },
     "check-and-alert": {
         "func": "check_and_alert",
@@ -33,6 +33,6 @@ SCHEDULER = {
         "hour": "08-22",
         "minute": "*/10",
         "second": "00",
-        "day_of_week": "mon-sat"
+        "day_of_week": "mon-fri"
     }
 }

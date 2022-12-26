@@ -1,17 +1,19 @@
 # automatic hiworks checkin and out
  
-hiworks 근태 관리 자동화 with selenium
+hiworks 근태 관리 자동화
 
-## Install
+### 주요 패키지
+- Selenium
+- APScheduler
+
+## Installation
 
 ### requirements
 
 - python ^3.10 (하위 버전 호환 X)
 - pip ^22.2.2
 
-### install
-
-**Install Python**
+### Install Python
 
 Install python3.10: https://www.python.org/downloads/
 
@@ -21,13 +23,13 @@ For Mac homebrew: https://formulae.brew.sh/formula/python@3.10
 homebrew install python@3.10
 ```
 
-**Download source code**
+### Download source code
 
 ```shell
 git clone https://github.com/smyoo-testworks/hiworks-check-in-and-out.git
 ````
 
-**Create venv and Install Packages**
+### Create venv and Install Packages
 ```shell
 # 설치 스크립트 실행
 # Mac
