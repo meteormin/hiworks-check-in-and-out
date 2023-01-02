@@ -15,8 +15,6 @@ class Schema(ABC):
 
 
 class Driver(ABC, Generic[T]):
-    config: dict
-
     def __init__(self, config: dict):
         self.config = config
 
