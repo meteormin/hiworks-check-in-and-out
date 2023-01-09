@@ -14,12 +14,10 @@ class SimpleMailer(Mailer):
         self.smtp.starttls()
         self.login_id = login_id
         self.login_pass = login_pass
-        self.is_login = False
         self.attachments = None
 
     def login(self, login_id: str, login_pass: str):
         self.smtp.login(login_id, login_pass)
-        self.is_login = True
 
     def attachment(self, file_path: list):
         msg = MIMEMultipart()
@@ -42,9 +40,8 @@ class SimpleMailer(Mailer):
 
         msg['Subject'] = subject
 
-        if not self.is_login:
-            self.login(self.login_id, self.login_pass)
         try:
+            self.login(self.login_id, self.login_pass)
             self.smtp.sendmail(self.login_id, to, msg.as_string())
             self.smtp.quit()
 
