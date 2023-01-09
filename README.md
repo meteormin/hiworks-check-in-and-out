@@ -61,14 +61,14 @@ settings.ini
 
 ```ini
 [hiworks]
-url = https://office.hiworks.com/testworks.onhiworks.com/
-id = your-id
-password = your-password
+url=https://office.hiworks.com/testworks.onhiworks.com/
+id=your-id
+password=your-password
 
 [mailer.outlook]
-url = outlook.office365.com
-id = your-id
-password = your-password
+url=smtp-mail.outlook.com
+id=your-id
+password=your-password
 ```
 
 ### Python CLI
@@ -76,8 +76,10 @@ password = your-password
 ```shell
 python3 cli.py {command-name} {arguments} {--options}
 
+# checkin
 python3 cli.py checkin --id={your-hiworks-id} --passwd={your-hiworks-password}
 
+# checkout
 python3 cli.py checkout --id={your-hiworks-id} --passwd={your-hiworks-password}
 ```
 
@@ -120,14 +122,16 @@ sh ./hiworks-checker.sh {checkin or checkout}
 
 **schedule command**
 > schedule 커맨드를 통해 크론 없이 스케줄링이 가능합니다.
-
+> 
 > 상대적으로 불안정하여, 하루에 한번 재시작 권장 
+>
+> *크롬 업데이트 시, selenium driver 업데이트를 위해 재시작 필수
 
 ```shell
 
 hiworks-checker.sh schedule
 
-# Windows
+# Windows... 위도우즈는 전체적으로 테스트가 필요...
 hiworks-checker.bat schedule
 
 ```
