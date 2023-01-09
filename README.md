@@ -1,8 +1,9 @@
 # automatic hiworks checkin and out
- 
+
 hiworks 근태 관리 자동화
 
 ### 주요 패키지
+
 - Selenium
 - APScheduler
 
@@ -23,6 +24,12 @@ For Mac homebrew: https://formulae.brew.sh/formula/python@3.10
 homebrew install python@3.10
 ```
 
+For Mac homebrew with pyenv: https://github.com/pyenv/pyenv
+
+```shell
+brew install pyenv pyenv-virtualenv
+```
+
 ### Download source code
 
 ```shell
@@ -30,6 +37,7 @@ git clone https://github.com/smyoo-testworks/hiworks-check-in-and-out.git
 ````
 
 ### Create venv and Install Packages
+
 ```shell
 # 설치 스크립트 실행
 # Mac
@@ -61,14 +69,14 @@ settings.ini
 
 ```ini
 [hiworks]
-url=https://office.hiworks.com/testworks.onhiworks.com/
-id=your-id
-password=your-password
+url = https://office.hiworks.com/testworks.onhiworks.com/
+id = your-id
+password = your-password
 
 [mailer.outlook]
-url=smtp-mail.outlook.com
-id=your-id
-password=your-password
+url = smtp-mail.outlook.com
+id = your-id
+password = your-password
 ```
 
 ### Python CLI
@@ -122,8 +130,8 @@ sh ./hiworks-checker.sh {checkin or checkout}
 
 **schedule command**
 > schedule 커맨드를 통해 크론 없이 스케줄링이 가능합니다.
-> 
-> 상대적으로 불안정하여, 하루에 한번 재시작 권장 
+>
+> 상대적으로 불안정하여, 하루에 한번 재시작 권장
 >
 > *크롬 업데이트 시, selenium driver 업데이트를 위해 재시작 필수
 
@@ -143,19 +151,19 @@ schedule configuration
 # python 딕셔너리 작성
 
 SCHEDULER = {
-  "test": {
-    "func": "test(command-name)",
-    "args": [
-      "argument1",
-      "argument2"
-    ],
-    "month": "*",
-    "day": "*",
-    "hour": "*",
-    "minute": "*",
-    "second": "10",
-    "day_of_week": "*"
-  }
+    "test": {
+        "func": "test(command-name)",
+        "args": [
+            "argument1",
+            "argument2"
+        ],
+        "month": "*",
+        "day": "*",
+        "hour": "*",
+        "minute": "*",
+        "second": "10",
+        "day_of_week": "*"
+    }
 }
 ```
 
