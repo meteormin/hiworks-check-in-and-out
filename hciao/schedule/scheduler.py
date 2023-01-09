@@ -6,6 +6,7 @@ from apscheduler.schedulers.base import BaseScheduler
 from apscheduler.schedulers.blocking import BlockingScheduler
 from apscheduler.schedulers.background import BackgroundScheduler
 from hciao.logger.log import Log
+from hciao.logger.logger_adapter import LoggerAdapter
 from hciao.utils.object import map_from_dict
 
 
@@ -22,13 +23,18 @@ class JobArgument:
     day_of_week: str | None = None
 
 
-def register(s: BaseScheduler, config: dict):
-    logger = Log.logger('scheduler')
+class Scheduler:
+    _TAG: str = 'scheduler'
 
-    def _add_job(job: JobArgument):
-        logger.info(f"add_job: {job.job_id}")
+    def __init__(self, s: BaseScheduler, config: dict):
+        self.logger = Log.logger(self._TAG)
+        self.logger.info('init...')
+        self.scheduler = s
+        self.config = config
 
-        s.add_job(
+    def add_job(self, job: JobArgument):
+        self.logger.info(f"add_job: {job.job_id}")
+        self.scheduler.add_job(
             id=job.job_id,
             func=job.func,
             trigger='cron',
@@ -41,7 +47,8 @@ def register(s: BaseScheduler, config: dict):
             args=job.args
         )
 
-    def _validate_job(job: dict) -> JobArgument | None:
+    @staticmethod
+    def validate_job(job: dict):
         args = JobArgument()
 
         for key in job.keys():
@@ -50,14 +57,17 @@ def register(s: BaseScheduler, config: dict):
 
         return map_from_dict(args, job)
 
-    def _health_check() -> bool:
+
+def register(s: BaseScheduler, config: dict):
+    def _health_check(logger: LoggerAdapter) -> bool:
         logger.info("health-check")
         return True
 
-    _add_job(JobArgument(
+    scheduler = Scheduler(s, config)
+    scheduler.add_job(JobArgument(
         job_id="health-check",
         func=_health_check,
-        args=[],
+        args=[scheduler.logger],
         month="*",
         day="*",
         hour="*",
@@ -67,14 +77,14 @@ def register(s: BaseScheduler, config: dict):
     ))
 
     for s_id, job_dict in config.items():
-        job_args = _validate_job(job_dict)
+        job_args = scheduler.validate_job(job_dict)
         if job_args is not None:
             job_args.job_id = s_id
-            _add_job(job_args)
+            scheduler.add_job(job_args)
         else:
-            logger.error(f"failed add job: {s_id}")
+            scheduler.logger.error(f"failed add job: {s_id}")
 
-    logger.info('Press Ctrl+{0} to exit'.format('Break' if os.name == 'nt' else 'C'))
+    scheduler.logger.info('Press Ctrl+{0} to exit'.format('Break' if os.name == 'nt' else 'C'))
 
     if isinstance(s, BlockingScheduler):
         try:

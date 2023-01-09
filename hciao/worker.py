@@ -57,10 +57,6 @@ class Worker:
             self.__logger.info('daily pip update...')
             subprocess.run(f"pip3 install -r {constants['base_path']}/../requirements.txt", shell=True)
 
-        self.__logger.info('sync local storages...')
-        save_count = sync_local_storages(list(self.__data_stores.values()))
-        self.__logger.info(f'sync rows: {save_count}')
-
         self.__mailer = self.__get_mailer(dict(self.__configs['mailer.outlook']))
         self.__checker = Checker(self.__data_stores[DataStoreEnum.JSON])
 
@@ -138,6 +134,17 @@ class Worker:
     @classmethod
     def __get_local_csv_storage(cls, path: str) -> LocalCsvDriver:
         return LocalCsvDriver({'path': path})
+
+    def sync_local_storages(self):
+        """
+        sync local storages
+        :return: int
+        """
+        self.__logger.info('start sync...')
+        save_count = sync_local_storages(list(self.__data_stores.values()))
+        self.__logger.info(f'end sync {save_count}')
+
+        return save_count
 
     def checkin(self, login_id: str, passwd: str) -> int:
         """

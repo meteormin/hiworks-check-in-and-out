@@ -78,6 +78,9 @@ def check_and_alert():
 def report_for_month(month: int = None, year: int = None):
     return get_worker().report_for_month(month, year)
 
+@cli.command()
+def sync_local_storages():
+    get_worker().sync_local_storages()
 
 @cli.command()
 def test():
@@ -88,6 +91,17 @@ def test():
 def schedule():
     scheduler_config = config.SCHEDULER
     worker = get_worker()
+
+    scheduler_config['sync-local-storages'] = {
+        "func": "sync_local_storages",
+        "args": [],
+        "month": "*",
+        "day": "*",
+        "hour": "00",
+        "minute": "00",
+        "second": "00",
+        "day_of_week": "mon-fri"
+    }
 
     for k, v in scheduler_config.items():
         if v['func']:
