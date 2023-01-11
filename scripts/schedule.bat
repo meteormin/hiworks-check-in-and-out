@@ -1,4 +1,4 @@
 @echo off
 
-SET BASEDIR="source-path"
-cd "%BASEDIR%" && "%BASEDIR%hiworks-checker.bat" schedule
+SET BASEDIR=%~dp0
+cd "%BASEDIR%\..\" && "%BASEDIR%hiworks-checker.bat" schedule
