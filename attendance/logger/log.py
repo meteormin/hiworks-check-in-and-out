@@ -1,6 +1,6 @@
 import logging
 import logging.config
-from hciao.logger.logger_adapter import LoggerAdapter
+from attendance.logger.logger_adapter import LoggerAdapter
 import config as cfg
 
 

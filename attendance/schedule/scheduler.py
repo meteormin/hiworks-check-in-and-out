@@ -5,9 +5,9 @@ from typing import Callable
 from apscheduler.schedulers.base import BaseScheduler
 from apscheduler.schedulers.blocking import BlockingScheduler
 from apscheduler.schedulers.background import BackgroundScheduler
-from hciao.logger.log import Log
-from hciao.logger.logger_adapter import LoggerAdapter
-from hciao.utils.object import map_from_dict
+from attendance.logger.log import Log
+from attendance.logger.logger_adapter import LoggerAdapter
+from attendance.utils.object import map_from_dict
 
 
 @dataclasses.dataclass

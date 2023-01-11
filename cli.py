@@ -1,7 +1,7 @@
 import click
-from hciao.definitions import PATH, TIMEZONE
-from hciao.worker import Worker
-from hciao.schedule import scheduler
+from attendance.definitions import PATH, TIMEZONE
+from attendance.worker import Worker
+from attendance.schedule import scheduler
 from apscheduler.schedulers.background import BlockingScheduler
 import config
 

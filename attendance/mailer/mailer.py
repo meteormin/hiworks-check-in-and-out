@@ -4,7 +4,7 @@ from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 from email.mime.base import MIMEBase
 from email import encoders
-from hciao.mailer.abstracts import Mailer
+from attendance.mailer.abstracts import Mailer
 
 
 class SimpleMailer(Mailer):

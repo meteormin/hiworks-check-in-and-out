@@ -6,24 +6,24 @@ from configparser import ConfigParser
 from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
 from webdriver_manager.chrome import ChromeDriverManager
-from hciao.browser.chrome import Chrome
-from hciao.browser.abstracts import Browser
-from hciao.logger.log import Log
-from hciao.browser.hiworks.elements import Checkin, Checkout, Check
-from hciao.browser.login_data import LoginData
-from hciao.logger.logger_adapter import LoggerAdapter
-from hciao.mailer.abstracts import Mailer
-from hciao.schedule.checker import Checker
-from hciao.utils import date as util_dt
-from hciao.storage.drivers.local import (
+from attendance.browser.chrome import Chrome
+from attendance.browser.abstracts import Browser
+from attendance.logger.log import Log
+from attendance.browser.hiworks.elements import Checkin, Checkout, Check
+from attendance.browser.login_data import LoginData
+from attendance.logger.logger_adapter import LoggerAdapter
+from attendance.mailer.abstracts import Mailer
+from attendance.schedule.checker import Checker
+from attendance.utils import date as util_dt
+from attendance.storage.drivers.local import (
     LocalSchema,
     LocalJsonDriver,
     LocalCsvDriver,
     DataStoreEnum,
     sync_local_storages
 )
-from hciao.storage.drivers.abstracts import Driver
-from hciao.mailer.mailer import SimpleMailer
+from attendance.storage.drivers.abstracts import Driver
+from attendance.mailer.mailer import SimpleMailer
 
 
 class Worker:

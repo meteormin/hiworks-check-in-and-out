@@ -6,8 +6,8 @@ import dfquery
 from natsort import natsorted
 from enum import Enum
 from dataclasses import dataclass
-from hciao.storage.drivers.abstracts import Driver, Schema, T
-from hciao.utils import object
+from attendance.storage.drivers.abstracts import Driver, Schema, T
+from attendance.utils import object
 
 
 def sync_local_storages(data_stores: list[Driver]):
