@@ -39,23 +39,23 @@ git clone https://github.com/smyoo-testworks/hiworks-check-in-and-out.git
 ### Create venv and Install Packages
 
 ```shell
-# 설치 스크립트 실행
-# Mac
+# python package 설치 스크립트 실행
+## Mac
 ./install.sh
 
-# windows
+## windows
 install.bat
 
 # 수동 설치
 python -m venv venv
 
-# Mac
+## Mac
 source ./venv/activate
 
-# Linux
+## Linux
 source ./venv/activate
 
-# Windows(CMD)
+## Windows(CMD)
 venv\activate.bat
 
 pip3 install -r requirements.txt
@@ -69,14 +69,14 @@ settings.ini
 
 ```ini
 [hiworks]
-url = https://office.hiworks.com/testworks.onhiworks.com/
-id = your-id
-password = your-password
+url=https://office.hiworks.com/testworks.onhiworks.com/
+id=your-id
+password=your-password
 
 [mailer.outlook]
-url = smtp-mail.outlook.com
-id = your-id
-password = your-password
+url=smtp-mail.outlook.com
+id=your-id
+password=your-password
 ```
 
 ### Python CLI
