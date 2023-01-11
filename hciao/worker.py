@@ -338,9 +338,12 @@ class Worker:
             if util_dt.hours_to_seconds(work.left) <= 600:
                 logger.debug(f"you must checkout!!")
 
-                mailer.send(mail_config['mailer.outlook']['id'], '[Alert] You must checkout!!',
-                            f"You must checkout, left {work.left}")
-
+                is_sent = mailer.send(mail_config['mailer.outlook']['id'], '[Alert] You must checkout!!',
+                                      f"You must checkout, left {work.left}")
+                if is_sent:
+                    logger.info("success send mail")
+                else:
+                    logger.info("fail send mail")
         return 0
 
     def report_for_month(self, month: int = None, year: int = None) -> int:
