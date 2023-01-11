@@ -111,7 +111,7 @@ class Worker:
         get local storage
         :param path:
         :type path: str
-        :return: local storage driver
+        :return:
         :rtype: Driver
         """
 
@@ -338,7 +338,7 @@ class Worker:
             if util_dt.hours_to_seconds(work.left) <= 600:
                 logger.debug(f"you must checkout!!")
 
-                is_sent = mailer.send(mail_config['mailer.outlook']['id'], '[Alert] You must checkout!!',
+                is_sent = mailer.send(mail_config['id'], '[Alert] You must checkout!!',
                                       f"You must checkout, left {work.left}")
                 if is_sent:
                     logger.info("success send mail")
