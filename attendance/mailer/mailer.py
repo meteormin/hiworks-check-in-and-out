@@ -10,6 +10,7 @@ from attendance.mailer.abstracts import Mailer
 class SimpleMailer(Mailer):
 
     def __init__(self, host: str, login_id: str, login_pass: str):
+        self.host = host
         self.smtp = smtplib.SMTP(host, 587)
         self.smtp.starttls()
         self.login_id = login_id
@@ -17,6 +18,8 @@ class SimpleMailer(Mailer):
         self.attachments = None
 
     def login(self, login_id: str, login_pass: str):
+        if self.smtp.sock is None:
+            self.smtp = smtplib.SMTP(self.host, 507)
         self.smtp.login(login_id, login_pass)
 
     def attachment(self, file_path: list):
