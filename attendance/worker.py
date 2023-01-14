@@ -146,7 +146,7 @@ class Worker:
 
         return save_count
 
-    def checkin(self, login_id: str, passwd: str) -> int:
+    def checkin(self, login_id: str = None, passwd: str = None) -> int:
         """
         출근하기
         :param login_id:
@@ -252,10 +252,12 @@ class Worker:
         data = data_store.get(data, now.strftime('%Y-%m-%d'))
         if data is None and not isinstance(data, LocalSchema):
             logger.info('not yet checkin')
+            self.checkin()
             return 1
 
         if data.checkin_at is None:
             logger.info('not yet checkin')
+            self.checkin()
             return 1
 
         if data.work_hour is not None:
