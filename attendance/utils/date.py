@@ -2,8 +2,10 @@ import datetime
 import calendar
 from pytimekr import pytimekr
 
+weekend = [5, 6]
 
-def is_holidays(date: datetime.date = None):
+
+def is_holidays(date: datetime.date = None, with_weekend: bool = True):
     if date is None:
         date = datetime.date.today()
 
@@ -11,6 +13,11 @@ def is_holidays(date: datetime.date = None):
 
     if date in holidays:
         return True
+
+    if with_weekend:
+        weekday = date.weekday()
+        if weekday in weekend:
+            return True
 
     return False
 
