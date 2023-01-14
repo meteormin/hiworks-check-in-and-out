@@ -159,7 +159,7 @@ class Worker:
         self.__logger.info('try checkin...')
 
         if util_dt.is_holidays(date=date.today()):
-            self.__logger.info('today is holiday')
+            self.__logger.info('today is not workday')
             return 1
 
         conf = self.__configs['hiworks']
@@ -203,7 +203,7 @@ class Worker:
         self.__logger.info('try checkout...')
 
         if util_dt.is_holidays(date=date.today()):
-            self.__logger.info('today is holiday')
+            self.__logger.info('today is not workday')
             return 1
 
         conf = self.__configs['hiworks']
