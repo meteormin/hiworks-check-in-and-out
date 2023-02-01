@@ -319,8 +319,11 @@ class Worker:
         mailer = self.__mailer
 
         if not is_checkin:
-            mailer.send(mail_config['id'], f"[Alert] You Don't Checkin...",
-                        f"go: {hiworks['url']}")
+            try:
+                mailer.send(mail_config['id'], f"[Alert] You Didn't Checkin...",
+                            f"go: {hiworks['url']}")
+            except (Exception,) as e:
+                logger.error(e)
 
         if data.work_hour is not None:
             logger.debug(f"already checkout: {data.checkout_at}")
@@ -339,13 +342,14 @@ class Worker:
 
             if util_dt.hours_to_seconds(work.left) <= 600:
                 logger.debug(f"you must checkout!!")
-
-                is_sent = mailer.send(mail_config['id'], '[Alert] You must checkout!!',
-                                      f"You must checkout, left {work.left}")
-                if is_sent:
+                try:
+                    mailer.send(mail_config['id'], '[Alert] You must checkout!!',
+                                f"You must checkout, left {work.left}")
                     logger.info("success send mail")
-                else:
+                except (Exception,) as e:
                     logger.info("fail send mail")
+                    logger.error(e)
+
         return 0
 
     def report_for_month(self, month: int = None, year: int = None) -> int:

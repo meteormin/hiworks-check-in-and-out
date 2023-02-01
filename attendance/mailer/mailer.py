@@ -19,7 +19,7 @@ class SimpleMailer(Mailer):
 
     def login(self, login_id: str, login_pass: str):
         if self.smtp.sock is None:
-            self.smtp = smtplib.SMTP(self.host, 507)
+            self.smtp = smtplib.SMTP(self.host, 587)
         self.smtp.login(login_id, login_pass)
 
     def attachment(self, file_path: list):
@@ -35,19 +35,15 @@ class SimpleMailer(Mailer):
         self.attachments = msg
         return self
 
-    def send(self, to: str, subject: str, msg: str) -> bool:
+    def send(self, to: str, subject: str, msg: str):
         msg = MIMEText(msg)
         if self.attachments is not None:
             self.attachments.attach(msg)
             msg = self.attachments
+            self.attachments = None
 
         msg['Subject'] = subject
 
-        try:
-            self.login(self.login_id, self.login_pass)
-            self.smtp.sendmail(self.login_id, to, msg.as_string())
-            self.smtp.quit()
-
-            return True
-        except:
-            return False
+        self.login(self.login_id, self.login_pass)
+        self.smtp.sendmail(self.login_id, to, msg.as_string())
+        self.smtp.quit()

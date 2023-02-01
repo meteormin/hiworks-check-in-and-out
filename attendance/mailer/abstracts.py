@@ -12,5 +12,5 @@ class Mailer(ABC):
         pass
 
     @abstractmethod
-    def send(self, to: str, subject: str, msg: str) -> bool:
+    def send(self, to: str, subject: str, msg: str):
         pass

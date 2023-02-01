@@ -7,7 +7,7 @@ SCHEDULER = {
         ],
         "month": "*",
         "day": "*",
-        "hour": "09",
+        "hour": "08",
         "minute": "03",
         "second": "00",
         "day_of_week": "mon-fri"
